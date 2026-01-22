@@ -6,7 +6,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static("public"));
+app.use(express.static(".")); // Serve static files from root
 
 // Route Adapters for Consolidated API Files
 const trackHandler = require("./api/track");
