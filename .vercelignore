@@ -1,0 +1,8 @@
+# Ignore server.js and local development files
+server.js
+routes/
+config/
+utils/
+node_modules/
+.env
+leads.csv
