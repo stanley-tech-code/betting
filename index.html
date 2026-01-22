@@ -290,12 +290,12 @@
 
       try {
         await Promise.all([
-          fetch(`${API}/lead`, {
+          fetch(`${API}?action=lead`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ sessionId, landingId: LANDING_ID, phone })
           }),
-          fetch(`${API}/visit`, {
+          fetch(`${API}?action=visit`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -305,7 +305,7 @@
               country: Intl.DateTimeFormat().resolvedOptions().timeZone.split('/')[0]
             })
           }),
-          fetch(`${API}/click`, {
+          fetch(`${API}?action=click`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ sessionId, landingId: LANDING_ID })
