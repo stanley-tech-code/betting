@@ -11,15 +11,21 @@ export default async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).send("Method Not Allowed");
     try {
       const variants = [
-        { name: "Sheng Hype", headline: "Ndege Imepa! 🚀", subheadline: "Watu wanakula 100x sahii! Ingia uone.", cta: "CHEZA SASA" },
-        { name: "Urgency Red", headline: "SIGNAL DETECTED: 80% WIN 🔥", subheadline: "System predicts high multiplier in 2 mins.", cta: "VIEW SIGNAL" },
-        { name: "Exclusive Club", headline: "VIP Access Only 💎", subheadline: "Join the elite winning circle.", cta: "REQUEST ACCESS" }
+        { name: "Sheng Hype", headline: "Ndege Imepa! 🚀", subheadline: "Watu wanakula 100x sahii! Ingia uone.", cta: "CHEZA SASA", template: "SHENG" },
+        { name: "Urgency Red", headline: "SIGNAL DETECTED: 80% WIN 🔥", subheadline: "System predicts high multiplier in 2 mins.", cta: "VIEW SIGNAL", template: "URGENCY" },
+        { name: "Exclusive Club", headline: "VIP Access Only 💎", subheadline: "Join the elite winning circle.", cta: "REQUEST ACCESS", template: "VIP" }
       ];
       const v = variants[Math.floor(Math.random() * variants.length)];
       v.name = v.name + " (" + Math.floor(Math.random() * 1000) + ")";
 
       const { data, error } = await supabase.from('variants').insert({
-        landing_id: 'LP_LOBBY', variant_name: v.name, headline: v.headline, subheadline: v.subheadline, cta_text: v.cta, status: 'PENDING'
+        landing_id: 'LP_LOBBY',
+        variant_name: v.name,
+        headline: v.headline,
+        subheadline: v.subheadline,
+        cta_text: v.cta,
+        template_type: v.template,
+        status: 'PENDING'
       }).select();
       if (error) throw error;
       return res.status(200).json({ success: true, variant: data[0] });
@@ -55,91 +61,74 @@ export default async function handler(req, res) {
     } catch (e) { return res.status(500).json({ error: e.message }); }
   }
 
-  // --- VARIANT: ANALYZE (PERFORMANCE SCORES) ---
+  // --- VARIANT: ANALYZE (Evaluate & Suggest) ---
   if (action === 'analyze') {
     try {
-      const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-      const [variantsRes] = await Promise.all([
-        supabase.from('variants').select('*').neq('status', 'REJECTED')
-      ]);
-      const variants = variantsRes.data || [];
+      // 1. Fetch Variants
+      const { data: variants } = await supabase.from('variants').select('*').neq('status', 'REJECTED');
 
-      const variantStats = variants.map(v => {
-        // Mock Data Logic for Demo
-        const vVisits = Math.floor(Math.random() * 500);
-        const vLeads = Math.floor(vVisits * (Math.random() * 0.08));
-        const vClicks = Math.floor(vVisits * (Math.random() * 0.15));
-        const ctr = vVisits > 0 ? vClicks / vVisits : 0;
+      const variantStats = (variants || []).map(v => {
+        // MOCK DATA: In prod, fetch real visits/clicks from traffic_logs or aggregated tables
+        // For demonstration, we simulate "live" data.
+        const vVisits = Math.floor(Math.random() * 800) + 50;
+        const vLeads = Math.floor(vVisits * (Math.random() * 0.1));
         const leadRate = vVisits > 0 ? vLeads / vVisits : 0;
 
-        let confidenceScore = vVisits > 500 ? 1 : (vVisits > 200 ? 0.5 : 0.1);
-        let score = Math.min(100, Math.round((ctr * 40 * 100) + (leadRate * 50 * 100) + (confidenceScore * 10)));
+        let aiScore = Math.min(100, Math.round(leadRate * 1000)); // Simple Score: Lead% * 10
+        if (vVisits < 100) aiScore = 50; // Neutral if low data
 
-        let status = "TEST MORE";
-        let insight = "Gathering data...";
-        if (score >= 80 && vVisits > 200) { status = "SCALE"; insight = "Excellent performance."; }
-        else if (score < 30 && vVisits > 200) { status = "PAUSE"; insight = "Underperforming."; }
+        let status = "TEST";
+        if (aiScore >= 80) status = "SCALE";
+        else if (aiScore < 30 && vVisits > 200) status = "PAUSE";
 
-        return { id: v.id, name: v.variant_name, headline: v.headline, visits: vVisits, leads: vLeads, ctr: (ctr * 100).toFixed(2), leadRate: (leadRate * 100).toFixed(2), score, status, insight };
+        return {
+          ...v,
+          visits: vVisits,
+          leads: vLeads,
+          leadRate: (leadRate * 100).toFixed(2),
+          ai_score: aiScore,
+          status_rec: status
+        };
       });
 
-      // 2. Calculate Recommended Weights (Normalization for Manual Mode)
-      let scaleCount = variantStats.filter(v => v.status === 'SCALE').length;
-      let testCount = variantStats.filter(v => v.status === 'TEST MORE' || v.status === 'TEST').length;
+      // 2. Calculate Suggested Weights (Logic: Scale gets bulk, Test gets remainder, Pause gets 0)
+      const scaleCandidates = variantStats.filter(v => v.status_rec === "SCALE");
+      const testCandidates = variantStats.filter(v => v.status_rec === "TEST");
 
-      let totalScale = (scaleCount > 0) ? (testCount > 0 ? 80 : 100) : 0;
-      let totalTest = (testCount > 0) ? (scaleCount > 0 ? 20 : 100) : 0;
-      if (scaleCount === 0 && testCount === 0) { totalScale = 100; scaleCount = 1; }
+      // Weight Distribution Config
+      const SCALE_POOL = scaleCandidates.length > 0 ? (testCandidates.length > 0 ? 80 : 100) : 0;
+      const TEST_POOL = testCandidates.length > 0 ? (scaleCandidates.length > 0 ? 20 : 100) : 0;
 
-      const wScale = scaleCount > 0 ? Math.floor(totalScale / scaleCount) : 0;
-      const wTest = testCount > 0 ? Math.floor(totalTest / testCount) : 0;
+      const weightPerScale = scaleCandidates.length > 0 ? Math.floor(SCALE_POOL / scaleCandidates.length) : 0;
+      const weightPerTest = testCandidates.length > 0 ? Math.floor(TEST_POOL / testCandidates.length) : 0;
 
       variantStats.forEach(v => {
-        if (v.status === 'SCALE') v.suggested_weight = wScale;
-        else if (v.status === 'TEST MORE' || v.status === 'TEST') v.suggested_weight = wTest;
+        if (v.status_rec === "SCALE") v.suggested_weight = weightPerScale;
+        else if (v.status_rec === "TEST") v.suggested_weight = weightPerTest;
         else v.suggested_weight = 0;
+
+        // Also return current weight (from DB 'weight' column)
+        v.current_weight = v.weight || 0;
       });
 
       return res.status(200).json({ success: true, stats: variantStats });
+
     } catch (e) { return res.status(500).json({ error: e.message }); }
   }
 
-  // --- VARIANT: APPLY WEIGHTS (AUTOMATION) ---
-  if (action === 'apply-weights') {
+  // --- VARIANT: APPLY (Manual Apply Button) ---
+  if (action === 'apply-manual') {
     if (req.method !== 'POST') return res.status(405).send("Method Not Allowed");
+    const { id, weight, status } = req.body;
+
     try {
-      const { data: variants } = await supabase.from('variants').select('*').neq('status', 'REJECTED');
-      const updates = [];
+      await supabase.from('variants').update({
+        weight: weight,
+        status: status,
+        last_updated: new Date().toISOString()
+      }).eq('id', id);
 
-      let scaleCount = 0;
-      let testCount = 0;
-      const analyzed = variants.map(v => {
-        // Mock Analysis Logic re-used
-        const vVisits = Math.floor(Math.random() * 500);
-        const vLeads = Math.floor(vVisits * (Math.random() * 0.08));
-        const ctr = vVisits > 0 ? (vVisits * 0.2) / vVisits : 0;
-        const leadRate = vVisits > 0 ? vLeads / vVisits : 0;
-        let score = (ctr * 40 * 100) + (leadRate * 50 * 100);
-        let role = "PAUSE";
-        if (score >= 80) { role = "SCALE"; scaleCount++; }
-        else if (score >= 30) { role = "TEST"; testCount++; }
-        return { id: v.id, role };
-      });
-
-      let totalScale = (scaleCount > 0) ? (testCount > 0 ? 80 : 100) : 0;
-      let totalTest = (testCount > 0) ? (scaleCount > 0 ? 20 : 100) : 0;
-      if (scaleCount === 0 && testCount === 0) { totalScale = 100; scaleCount = 1; if (analyzed.length > 0) analyzed[0].role = "SCALE"; }
-
-      const wScale = scaleCount > 0 ? Math.floor(totalScale / scaleCount) : 0;
-      const wTest = testCount > 0 ? Math.floor(totalTest / testCount) : 0;
-
-      for (const v of analyzed) {
-        let newWeight = v.role === "SCALE" ? wScale : (v.role === "TEST" ? wTest : 0);
-        const statusV = v.role === "SCALE" ? "SCALE" : (v.role === "TEST" ? "TEST MORE" : "PAUSE");
-        await supabase.from('variants').update({ weight: newWeight, status: statusV }).eq('id', v.id);
-        updates.push({ id: v.id, role: v.role, weight: newWeight });
-      }
-      return res.status(200).json({ success: true, updates });
+      return res.status(200).json({ success: true, message: "Applied" });
     } catch (e) { return res.status(500).json({ error: e.message }); }
   }
 

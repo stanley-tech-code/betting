@@ -167,20 +167,31 @@
       background: var(--danger);
     }
 
-    .btn-copy {
-      background: transparent;
+    .btn-action-sm {
+      padding: 6px 12px;
+      border-radius: 6px;
       border: 1px solid var(--border);
-      color: var(--text-secondary);
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 0.75rem;
+      background: transparent;
+      color: var(--text-primary);
       cursor: pointer;
+      font-size: 0.8rem;
+      margin-right: 5px;
       transition: 0.2s;
     }
 
-    .btn-copy:hover {
-      border-color: var(--text-primary);
-      color: var(--text-primary);
+    .btn-action-sm:hover {
+      background: var(--surface-hover);
+      border-color: var(--text-secondary);
+    }
+
+    .btn-apply {
+      background: var(--accent-purple);
+      border-color: var(--accent-purple);
+      color: white;
+    }
+
+    .btn-apply:hover {
+      background: #9333ea;
     }
 
     /* AI CHAT STYLE PANEL */
@@ -197,48 +208,13 @@
       border-left: 2px solid var(--accent-purple);
     }
 
-    /* ACTIONS */
-    .action-btn {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 14px;
-      border-radius: 8px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: 0.2s;
-      font-size: 0.9rem;
-      border: none;
-      outline: none;
-      background: white;
-      color: black;
-      margin-bottom: 12px;
-    }
-
-    .action-btn:hover {
-      opacity: 0.9;
-    }
-
-    .action-btn.secondary {
-      background: var(--surface-hover);
-      color: white;
-      border: 1px solid var(--border);
-    }
-
-    .action-btn.secondary:hover {
-      border-color: #fff;
-    }
-
-    .warning-box {
+    .alert-item {
       background: rgba(239, 68, 68, 0.1);
-      border: 1px solid var(--danger);
-      padding: 10px;
-      border-radius: 6px;
-      font-size: 0.85rem;
+      border-left: 3px solid var(--danger);
       color: #fca5a5;
-      margin-bottom: 15px;
-      display: none;
+      padding: 10px;
+      font-size: 0.85rem;
+      margin-bottom: 10px;
     }
   </style>
 </head>
@@ -301,10 +277,12 @@
           <thead>
             <tr>
               <th>Variant</th>
+              <th>Template</th>
+              <th>AI Score</th>
               <th>Status</th>
-              <th>Score</th>
-              <th>Rec. Traffic %</th>
-              <th>Propeller Link</th>
+              <th>Suggested %</th>
+              <th>Current %</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody><!-- Data --></tbody>
@@ -318,19 +296,16 @@
           Propeller Advisor
         </h2>
 
-        <div id="alertBox" class="warning-box">
-          ⚠️ <b>Rollback Alert:</b> Variant A-01 dropped lead rate by 40%. Pause it immediately.
-        </div>
+        <div id="alertsArea"></div>
 
         <div id="aiFeed">
           <div class="chat-msg">Calculating allocation...</div>
         </div>
 
         <div style="margin-top:20px; border-top:1px solid var(--border); padding-top:20px;">
-          <div class="metric-label">Action Log</div>
-          <button class="action-btn" onclick="applyAI()">✅ Log: Applied to Propeller</button>
-          <button class="action-btn secondary" onclick="window.location.href='/api/stats/download-leads'">Export Phone
-            Leads</button>
+          <button
+            style="width:100%; padding:10px; background:var(--surface-hover); border:1px solid var(--border); color:#fff; border-radius:6px; cursor:pointer;"
+            onclick="window.location.href='/api/stats/download-leads'">Export Data</button>
         </div>
       </div>
     </div>
@@ -350,7 +325,7 @@
       loadStats();
       loadCharts();
       loadAI();
-      setInterval(pollWatchdog, 15000);
+      setInterval(pollWatchdog, 10000);
       pollWatchdog();
     }
 
@@ -407,35 +382,34 @@
 
         data.stats.forEach(s => {
           let dotClass = 'status-test';
-          let statusText = 'TEST';
-          if (s.status === 'SCALE') { dotClass = 'status-scale'; statusText = 'SCALE'; }
-          if (s.status === 'PAUSE') { dotClass = 'status-pause'; statusText = 'PAUSE'; }
+          if (s.status_rec === 'SCALE') dotClass = 'status-scale';
+          if (s.status_rec === 'PAUSE') dotClass = 'status-pause';
+
+          const link = `${baseUrl}/index.html?v=${s.id}`;
 
           // Table Row
-          const link = `${baseUrl}/index.html?v=${s.id}`;
           table.innerHTML += `
                         <tr>
-                            <td><span class="status-dot ${dotClass}"></span>${s.name}</td>
-                            <td style="font-weight:bold;">${statusText}</td>
-                            <td>${s.score}/100</td>
-                             <td style="color:${s.suggested_weight > 0 ? 'var(--success)' : 'var(--text-secondary)'}; font-weight:bold;">
-                                ${s.suggested_weight > 0 ? s.suggested_weight + '%' : 'PAUSE (0%)'}
+                            <td><span class="status-dot ${dotClass}"></span>${s.variant_name || s.name}</td>
+                            <td>${s.template_type || 'A/B'}</td>
+                            <td><b>${s.ai_score}</b></td>
+                            <td>${s.status_rec}</td>
+                            <td style="color:${s.suggested_weight > 0 ? 'var(--success)' : 'var(--text-secondary)'}; font-weight:600;">
+                                ${s.suggested_weight}%
                             </td>
-                            <td><button class="btn-copy" onclick="copyLink('${link}')">Copy Link</button></td>
+                            <td>${s.current_weight}%</td>
+                            <td style="display:flex; gap:5px;">
+                                <button class="btn-action-sm btn-apply" onclick="apply('${s.id}', ${s.suggested_weight}, '${s.status_rec}')">Apply</button>
+                                <button class="btn-action-sm" onclick="copyURL('${link}')">Copy</button>
+                            </td>
                         </tr>
                     `;
 
           // Chat Logic
-          if (s.status === 'SCALE') {
+          if (s.status_rec === 'SCALE' && s.current_weight < s.suggested_weight) {
             feed.innerHTML += `<div class="chat-msg">
-                            <b>🚀 Increase ${s.name}</b><br>
-                            Allocation: Set Propeller traffic to <b>${s.suggested_weight}%</b>. Leading performance.
-                         </div>`;
-          }
-          if (s.status === 'PAUSE') {
-            feed.innerHTML += `<div class="chat-msg" style="border-color:var(--danger)">
-                            <b>⛔ Stop ${s.name}</b><br>
-                            Allocation: 0%. Performance dropped.
+                            <b>🚀 Opportunity:</b> ${s.name}<br>
+                            Rec: Increase to <b>${s.suggested_weight}%</b>. Current: ${s.current_weight}%.
                          </div>`;
           }
         });
@@ -445,24 +419,29 @@
     async function pollWatchdog() {
       const res = await fetch('/api/traffic/monitor');
       const data = await res.json();
-      if (data.rollbacks && data.rollbacks.length > 0) {
-        const box = document.getElementById("alertBox");
-        box.style.display = 'block';
-        box.innerHTML = `⚠️ <b>ROLLBACK ALERT:</b> ${data.rollbacks[0].message}`;
+      if (data.alerts && data.alerts.length > 0) {
+        const alertArea = document.getElementById("alertsArea");
+        alertArea.innerHTML = "";
+        data.alerts.forEach(a => {
+          alertArea.innerHTML += `<div class="alert-item">⚠️ ${a.message}</div>`;
+        });
       }
     }
 
-    function copyLink(url) {
-      navigator.clipboard.writeText(url);
-      alert("Propeller Direct Link Copied:\n" + url);
+    async function apply(id, weight, status) {
+      await fetch('/api/variant/apply-manual', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, weight, status })
+      });
+      // Also user must do it manually in Propeller
+      alert("Updated internal records.\n\n⚠️ IMPORTANT: Now go to Propeller Ads and set this link to " + weight + "% traffic.");
+      loadAI();
     }
 
-    async function applyAI() {
-      // "Mark as Applied" logic - tells system user has manually updated Propeller
-      // In reality, we still run the internal weight update so Smart Links work too.
-      await fetch('/api/variant/apply-weights', { method: 'POST' });
-      alert("✅ Action Logged: Rotation timestamp recorded.\n\nGreat job keeping the campaign optimized.");
-      loadAI();
+    function copyURL(url) {
+      navigator.clipboard.writeText(url);
+      alert("URL Copied!");
     }
 
     init();
