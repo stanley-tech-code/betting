@@ -16,6 +16,10 @@
       "dest": "/api/traffic/$1.js"
     },
     {
+      "src": "/api/stats/(.*)",
+      "dest": "/api/stats/$1.js"
+    },
+    {
       "src": "/api/variant/(.*)",
       "dest": "/api/variant/$1.js"
     },
