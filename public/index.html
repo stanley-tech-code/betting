@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AVIATOR - OFFICIAL GAME</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --brand-red: #E91E63;
+      --brand-black: #101010;
+      --secondary-black: #1a1a1a;
+      --text-gray: #B0B0B0;
+      --highlight-green: #4CAF50;
+      --highlight-yellow: #FFD700;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--brand-black);
+      color: white;
+      font-family: 'Montserrat', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Nav */
+    .navbar {
+      padding: 15px 20px;
+      border-bottom: 1px solid #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--secondary-black);
+    }
+
+    .logo {
+      font-weight: 900;
+      font-size: 1.2rem;
+      color: var(--brand-red);
+      letter-spacing: 1px;
+    }
+
+    .login-btn {
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    /* Hero Stats */
+    .hero-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 20px;
+      text-align: center;
+      background: linear-gradient(180deg, rgba(233, 30, 99, 0.1) 0%, transparent 100%);
+    }
+
+    .stat-box {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    .stat-val {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: var(--highlight-green);
+      display: block;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-gray);
+      text-transform: uppercase;
+    }
+
+    /* Main Info */
+    .info-section {
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin: 10px 0;
+      text-transform: uppercase;
+    }
+
+    p {
+      color: var(--text-gray);
+      font-size: 0.95rem;
+      line-height: 1.5;
+      margin-bottom: 30px;
+    }
+
+    /* Bonus Badge */
+    .bonus-badge {
+      background: linear-gradient(45deg, #FFD700, #FFA500);
+      color: #000;
+      padding: 10px 20px;
+      border-radius: 50px;
+      font-weight: 900;
+      font-size: 0.9rem;
+      display: inline-block;
+      margin-bottom: 20px;
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+      }
+
+      50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
+      }
+
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+      }
+    }
+
+    /* Registration Form (The Lead Capture) */
+    .reg-box {
+      background: var(--secondary-black);
+      padding: 25px;
+      border-radius: 15px;
+      border: 1px solid #333;
+      max-width: 400px;
+      margin: 0 auto;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .reg-header {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .offer-highlight {
+      color: var(--highlight-yellow);
+      font-weight: bold;
+      font-size: 1rem;
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    input {
+      width: 100%;
+      padding: 15px;
+      background: #000;
+      border: 1px solid #444;
+      border-radius: 8px;
+      color: #fff;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1rem;
+      margin-bottom: 15px;
+      box-sizing: border-box;
+    }
+
+    input:focus {
+      border-color: var(--brand-red);
+      outline: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      background: var(--brand-red);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      font-size: 1.1rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(233, 30, 99, 0.4);
+      transition: transform 0.2s;
+    }
+
+    button:hover {
+      transform: scale(1.02);
+    }
+
+    /* Winners List */
+    .winners-section {
+      margin-top: 40px;
+      padding: 20px;
+    }
+
+    .section-title {
+      font-size: 1rem;
+      color: var(--brand-red);
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .winner-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #222;
+      font-size: 0.9rem;
+    }
+
+    .w-amt {
+      color: var(--highlight-green);
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar">
+    <div class="logo">AVIATOR</div>
+    <a href="#" class="login-btn">LOGIN</a>
+  </nav>
+
+  <div class="hero-stats">
+    <div class="stat-box">
+      <span class="stat-val">12,405</span>
+      <span class="stat-label">Players Online</span>
+    </div>
+    <div class="stat-box">
+      <span class="stat-val">KES 4.2M</span>
+      <span class="stat-label">Paid Today</span>
+    </div>
+  </div>
+
+  <div class="info-section">
+    <div class="bonus-badge">🔥 100% WELCOME BONUS</div>
+    <h1>Win up to 100x</h1>
+    <p>The world's most popular crash game is here. Watch the plane fly, cash out before it crashes, and multiply your
+      money.</p>
+
+    <div class="reg-box">
+      <div class="reg-header">CREATE PLAYER ID</div>
+      <span class="offer-highlight">DEPOSIT 100 = GET 200 TO PLAY!</span>
+
+      <input type="tel" id="phone" placeholder="Enter Phone Number" autocomplete="tel">
+      <button id="submitPhoneBtn">GET BONUS & JOIN</button>
+      <div style="margin-top:15px; font-size:0.75rem; color:#666;">By joining, you agree to T&Cs. 18+ Only.</div>
+    </div>
+  </div>
+
+  <div class="winners-section">
+    <div class="section-title">🏆 Recent Big Wins</div>
+    <div class="winner-row">
+      <span>Kevin M.</span>
+      <span class="w-amt">+ KES 45,000 (54x)</span>
+    </div>
+    <div class="winner-row">
+      <span>Brian K.</span>
+      <span class="w-amt">+ KES 12,500 (12x)</span>
+    </div>
+    <div class="winner-row">
+      <span>Sarah W.</span>
+      <span class="w-amt">+ KES 8,200 (6.5x)</span>
+    </div>
+  </div>
+
+  <script>
+    const API = "/api/track";
+    const LANDING_ID = "LP_LOBBY_REGISTER";
+
+    document.getElementById("submitPhoneBtn").addEventListener("click", async () => {
+      const phone = document.getElementById("phone").value.trim();
+      const sessionId = crypto.randomUUID();
+
+      if (!phone || phone.length < 9) {
+        alert("Please enter a valid phone number.");
+        return;
+      }
+
+      const btn = document.getElementById("submitPhoneBtn");
+      btn.innerText = "ACTIVATING BONUS...";
+      btn.disabled = true;
+
+      localStorage.setItem("tracker_session", sessionId);
+
+      try {
+        await Promise.all([
+          fetch(`${API}/lead`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ sessionId, landingId: LANDING_ID, phone })
+          }),
+          fetch(`${API}/visit`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              sessionId,
+              landingId: LANDING_ID,
+              source: "propeller",
+              country: Intl.DateTimeFormat().resolvedOptions().timeZone.split('/')[0]
+            })
+          }),
+          fetch(`${API}/click`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ sessionId, landingId: LANDING_ID })
+          })
+        ]);
+
+        window.location.href = "bet.html";
+
+      } catch (error) {
+        console.error("Tracking error:", error);
+        window.location.href = "bet.html";
+      }
+    });
+  </script>
+</body>
+
+</html>

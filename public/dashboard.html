@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>🚀 Traffic Command Center</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap"
+    rel="stylesheet">
+  <style>
+    /* CSS Variables */
+    :root {
+      --bg-color: #050a14;
+      --card-bg: rgba(16, 24, 40, 0.7);
+      --accent-cyan: #00f3ff;
+      --accent-purple: #bc13fe;
+      --accent-red: #ff0055;
+      --text-primary: #e2e8f0;
+      --border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-color);
+      background-image:
+        radial-gradient(circle at 10% 20%, rgba(188, 19, 254, 0.1) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, rgba(0, 243, 255, 0.1) 0%, transparent 20%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 30px 20px;
+    }
+
+    h1 {
+      font-family: 'Orbitron', sans-serif;
+      text-align: center;
+      font-size: 2.2rem;
+      margin-bottom: 30px;
+      background: linear-gradient(to right, var(--accent-cyan), var(--accent-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      gap: 30px;
+    }
+
+    /* Cards */
+    .dashboard-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.2rem;
+      color: var(--accent-cyan);
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 10px;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    th {
+      text-align: left;
+      padding: 12px;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+    }
+
+    td {
+      padding: 12px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .landing-id {
+      font-family: 'Orbitron', sans-serif;
+      color: #fff;
+    }
+
+    .metric-value {
+      font-weight: 600;
+    }
+
+    .leads-highlight {
+      color: var(--accent-purple);
+      text-shadow: 0 0 8px rgba(188, 19, 254, 0.4);
+    }
+
+    .phone-number {
+      font-family: 'Orbitron', sans-serif;
+      color: var(--accent-cyan);
+      letter-spacing: 1px;
+    }
+
+    .time-ago {
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>Traffic Command Center</h1>
+
+    <!-- Stats Overview -->
+    <div class="dashboard-card">
+      <h2>📊 Performance Overview</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Landing Page</th>
+            <th>Visits</th>
+            <th>Clicks</th>
+            <th>Leads</th>
+            <th>CTR</th>
+          </tr>
+        </thead>
+        <tbody id="statsBody"></tbody>
+      </table>
+    </div>
+
+    <!-- Live Leads Feed -->
+    <div class="dashboard-card">
+      <h2>
+        🔥 Live Leads Feed
+        <span style="font-size:0.8rem; float:right; margin-left:10px;">
+          <a href="/api/stats/download-leads"
+            style="color:var(--accent-cyan); text-decoration:none; border:1px solid var(--accent-cyan); padding:5px 10px; border-radius:5px;">⬇
+            Download All CSV</a>
+        </span>
+        <span style="font-size:0.8rem; float:right; color:#fff;">Last 50</span>
+      </h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Phone Number</th>
+            <th>Source Page</th>
+          </tr>
+        </thead>
+        <tbody id="leadsBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const API = "/api/stats/dashboard-summary";
+    const fmt = (n) => new Intl.NumberFormat().format(n);
+
+    async function loadDashboard() {
+      try {
+        const res = await fetch(API);
+        const data = await res.json();
+
+        // Update Stats
+        const statsBody = document.getElementById("statsBody");
+        let statsHtml = "";
+        if (data.stats && Object.keys(data.stats).length > 0) {
+          Object.keys(data.stats).forEach(landing => {
+            const s = data.stats[landing];
+            statsHtml += `<tr>
+              <td class="landing-id">${landing}</td>
+              <td class="metric-value">${fmt(s.visits)}</td>
+              <td class="metric-value">${fmt(s.clicks)}</td>
+              <td class="metric-value leads-highlight">${fmt(s.leads)}</td>
+              <td class="metric-value" style="color: ${s.ctr > 10 ? '#4ade80' : '#fff'}">${s.ctr}%</td>
+            </tr>`;
+          });
+        } else {
+          statsHtml = "<tr><td colspan='5' style='text-align:center; padding:20px; color:#666;'>No Data Yet</td></tr>";
+        }
+        statsBody.innerHTML = statsHtml;
+
+        // Update Leads
+        const leadsBody = document.getElementById("leadsBody");
+        let leadsHtml = "";
+        if (data.recentLeads && data.recentLeads.length > 0) {
+          data.recentLeads.forEach(lead => {
+            const date = new Date(lead.created_at);
+            const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            leadsHtml += `<tr>
+                  <td class="time-ago">${timeStr}</td>
+                  <td class="phone-number">${lead.phone}</td>
+                  <td>${lead.landing_id || '-'}</td>
+              </tr>`;
+          });
+        } else {
+          leadsHtml = "<tr><td colspan='3' style='text-align:center; padding:20px; color:#666;'>Waiting for leads...</td></tr>";
+        }
+        leadsBody.innerHTML = leadsHtml;
+
+      } catch (e) {
+        console.error("Dashboard error", e);
+      }
+    }
+
+    loadDashboard();
+    setInterval(loadDashboard, 3000);
+  </script>
+
+</body>
+
+</html>

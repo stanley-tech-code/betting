@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PLAY AVIATOR</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --brand-red: #E91E63;
+      --brand-black: #101010;
+      --secondary-black: #1a1a1a;
+      --text-gray: #B0B0B0;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--brand-black);
+      color: white;
+      font-family: 'Montserrat', sans-serif;
+      text-align: center;
+      overflow-x: hidden;
+    }
+
+    /* Top Bar */
+    .top-bar {
+      background-color: var(--secondary-black);
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #333;
+    }
+
+    .balance {
+      color: #4CAF50;
+      font-weight: bold;
+    }
+
+    /* Game Area */
+    .game-container {
+      margin: 20px auto;
+      width: 95%;
+      max-width: 500px;
+      background: #000;
+      border-radius: 15px;
+      border: 2px solid #333;
+      height: 300px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 0 30px rgba(233, 30, 99, 0.2);
+    }
+
+    /* The Plane Curve */
+    .curve {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-top: 2px solid var(--brand-red);
+      border-radius: 100% 0 0 0;
+      background: linear-gradient(180deg, rgba(233, 30, 99, 0.1) 0%, transparent 100%);
+      transform-origin: bottom left;
+      animation: growCurve 5s linear infinite;
+    }
+
+    /* Plane Icon */
+    .plane {
+      position: absolute;
+      font-size: 2rem;
+      animation: flyPlane 5s linear infinite;
+    }
+
+    @keyframes growCurve {
+      0% {
+        transform: scale(0);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    @keyframes flyPlane {
+      0% {
+        bottom: 10px;
+        left: 10px;
+        transform: rotate(15deg);
+      }
+
+      100% {
+        bottom: 250px;
+        left: 80%;
+        transform: rotate(35deg);
+      }
+    }
+
+    .multiplier-cnt {
+      font-size: 4rem;
+      font-weight: 900;
+      color: white;
+      z-index: 10;
+      text-shadow: 0 0 20px var(--brand-red);
+    }
+
+    /* Trust Badges */
+    .badges {
+      display: flex;
+      justify-content: space-around;
+      padding: 15px;
+      margin: 10px 0;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .badge-item {
+      font-size: 0.8rem;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    .highlight {
+      color: #facc15;
+      font-size: 1.1rem;
+      display: block;
+    }
+
+    /* CTA Section */
+    .cta-box {
+      padding: 20px;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .main-btn {
+      background: #4CAF50;
+      color: #fff;
+      width: 100%;
+      padding: 20px;
+      border: none;
+      border-radius: 30px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 5px 0 #2E7D32;
+      animation: pulseBtn 1s infinite alternate;
+      text-decoration: none;
+      display: block;
+    }
+
+    @keyframes pulseBtn {
+      from {
+        transform: scale(1);
+      }
+
+      to {
+        transform: scale(1.05);
+      }
+    }
+
+    .offer-text {
+      margin-top: 15px;
+      color: #ccc;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .offer-highlight {
+      color: #fff;
+      font-weight: bold;
+    }
+
+    #bitlyLink {
+      margin-top: 20px;
+    }
+
+    #bitlyLink a {
+      color: #555;
+      text-decoration: none;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="top-bar">
+    <span>DEMO MODE</span>
+    <span class="balance">KES 0.00</span>
+  </div>
+
+  <div class="game-container">
+    <div class="curve"></div>
+    <div class="plane">✈️</div>
+    <div class="multiplier-cnt" id="counter">1.00x</div>
+  </div>
+
+  <div class="badges">
+    <div class="badge-item">
+      <span class="highlight">80%</span>
+      WIN CHANCE
+    </div>
+    <div class="badge-item">
+      <span class="highlight">INSTANT</span>
+      CASH OUT
+    </div>
+    <div class="badge-item">
+      <span class="highlight">24/7</span>
+      SUPPORT
+    </div>
+  </div>
+
+  <div class="cta-box">
+    <a href="https://bit.ly/4r4r9l8" class="main-btn">PLAY NOW & WIN</a>
+
+    <p class="offer-text">
+      Making a deposit? Get a <span class="offer-highlight">100% MATCH UP!</span><br>
+      Deposit <span style="color:#facc15">100</span> = Get <span style="color:#facc15">200</span> to play.
+    </p>
+
+    <div id="bitlyLink" style="display:block; margin-top:20px; text-align:center;">
+      <a href="https://bit.ly/4r4r9l8" target="_blank" style="color:#38bdf8; font-weight:bold; font-size:18px;">
+        🎮 Tap here to play now!
+      </a>
+    </div>
+  </div>
+
+  <script>
+    // Config
+    const BITLY_LINK = "https://bit.ly/4r4r9l8";
+
+    // Counter Animation
+    let count = 1.00;
+    setInterval(() => {
+      count += 0.01;
+      if (count > 8.00) count = 1.00;
+      document.getElementById("counter").innerText = count.toFixed(2) + "x";
+    }, 30);
+
+    // Tracking
+    const SESSION_KEY = 'tracker_session';
+    const API = "/api/track";
+
+    async function trackPage() {
+      try {
+        const sessionId = localStorage.getItem(SESSION_KEY);
+        await fetch(`${API}/visit`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sessionId: sessionId,
+            landingId: 'LP_BET_AVIATOR',
+            source: 'funnel_step_2'
+          })
+        });
+      } catch (e) { console.error(e); }
+    }
+
+    trackPage();
+
+    // Auto redirect
+    setTimeout(() => { window.location.href = BITLY_LINK; }, 4000);
+  </script>
+</body>
+
+</html>
