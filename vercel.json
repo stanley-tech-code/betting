@@ -1,69 +1,83 @@
 {
   "version": 2,
-  "rewrites": [
+  "builds": [
     {
-      "source": "/api/track/visit",
-      "destination": "/api/track.js?action=visit"
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
     },
     {
-      "source": "/api/track/click",
-      "destination": "/api/track.js?action=click"
+      "src": "*.html",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/track/visit",
+      "dest": "/api/track.js?action=visit"
     },
     {
-      "source": "/api/track/lead",
-      "destination": "/api/track.js?action=lead"
+      "src": "/api/track/click",
+      "dest": "/api/track.js?action=click"
     },
     {
-      "source": "/api/stats/dashboard-summary",
-      "destination": "/api/stats.js?action=dashboard-summary"
+      "src": "/api/track/lead",
+      "dest": "/api/track.js?action=lead"
     },
     {
-      "source": "/api/stats/history",
-      "destination": "/api/stats.js?action=history"
+      "src": "/api/stats/dashboard-summary",
+      "dest": "/api/stats.js?action=dashboard-summary"
     },
     {
-      "source": "/api/stats/download-leads",
-      "destination": "/api/stats.js?action=download-leads"
+      "src": "/api/stats/history",
+      "dest": "/api/stats.js?action=history"
     },
     {
-      "source": "/api/traffic/go",
-      "destination": "/api/traffic.js?action=go"
+      "src": "/api/stats/download-leads",
+      "dest": "/api/stats.js?action=download-leads"
     },
     {
-      "source": "/api/traffic/monitor",
-      "destination": "/api/traffic.js?action=monitor"
+      "src": "/api/traffic/go",
+      "dest": "/api/traffic.js?action=go"
     },
     {
-      "source": "/api/variant/propose",
-      "destination": "/api/engine.js?action=propose"
+      "src": "/api/traffic/monitor",
+      "dest": "/api/traffic.js?action=monitor"
     },
     {
-      "source": "/api/variant/list",
-      "destination": "/api/engine.js?action=list"
+      "src": "/api/variant/propose",
+      "dest": "/api/engine.js?action=propose"
     },
     {
-      "source": "/api/variant/get",
-      "destination": "/api/engine.js?action=get"
+      "src": "/api/variant/list",
+      "dest": "/api/engine.js?action=list"
     },
     {
-      "source": "/api/variant/status",
-      "destination": "/api/engine.js?action=status"
+      "src": "/api/variant/get",
+      "dest": "/api/engine.js?action=get"
     },
     {
-      "source": "/api/variant/analyze",
-      "destination": "/api/engine.js?action=analyze"
+      "src": "/api/variant/status",
+      "dest": "/api/engine.js?action=status"
     },
     {
-      "source": "/api/variant/apply-weights",
-      "destination": "/api/engine.js?action=apply-weights"
+      "src": "/api/variant/analyze",
+      "dest": "/api/engine.js?action=analyze"
     },
     {
-      "source": "/api/ai/forecast",
-      "destination": "/api/engine.js?action=forecast"
+      "src": "/api/variant/apply-weights",
+      "dest": "/api/engine.js?action=apply-weights"
     },
     {
-      "source": "/api/ai/analyze",
-      "destination": "/api/engine.js?action=ai-analyze"
+      "src": "/api/ai/forecast",
+      "dest": "/api/engine.js?action=forecast"
+    },
+    {
+      "src": "/api/ai/analyze",
+      "dest": "/api/engine.js?action=ai-analyze"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
     }
   ]
 }
