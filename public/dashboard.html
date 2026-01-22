@@ -131,7 +131,8 @@
     <h1>Traffic Command Center</h1>
 
     <!-- Stats Overview -->
-    <div class="dashboard-card">
+    <!-- Stats Overview -->
+    <div class="dashboard-card" style="border-color:var(--accent-cyan);">
       <h2>📊 Performance Overview</h2>
       <table>
         <thead>
@@ -145,6 +146,23 @@
         </thead>
         <tbody id="statsBody"></tbody>
       </table>
+    </div>
+
+    <!-- VARIANT PERFORMANCE ENGINE (STEP 7.4) -->
+    <div class="dashboard-card" style="border-color:var(--accent-purple);">
+      <h2>🧬 AI Variant Performance Engine</h2>
+      <div style="margin-bottom:15px; display:flex; gap:10px;">
+        <button onclick="proposeVariant()"
+          style="background:var(--accent-purple); color:#fff; border:none; padding:8px 15px; border-radius:4px; cursor:pointer; font-weight:bold;">✨
+          ASK AI TO GENERATE VARIANT</button>
+        <span id="genStatus" style="color:#aaa; font-size:0.85rem; padding-top:5px;"></span>
+      </div>
+
+      <!-- Variants Grid -->
+      <div id="variantsGrid"
+        style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:20px;">
+        <!-- Loading Variants... -->
+      </div>
     </div>
 
     <!-- Live Leads Feed -->
@@ -224,7 +242,176 @@
     }
 
     loadDashboard();
-    setInterval(loadDashboard, 3000);
+    loadDashboard();
+    setInterval(loadDashboard, 5000);
+
+    // --- VARIANT ENGINE LOGIC ---
+    async function loadVariants() {
+      try {
+        // 1. Load Analysis (Performance Score)
+        const res = await fetch('/api/variant/analyze');
+        const data = await res.json();
+
+        // 2. Load Pending List (for approvals)
+        const pendingRes = await fetch('/api/variant/list');
+        const pendingData = await pendingRes.json();
+
+        const grid = document.getElementById("variantsGrid");
+        grid.innerHTML = "";
+
+        // MERGE Logic: Display Analyzed variants + Pending variants
+        const allVariants = [];
+
+        // Add Pending first
+        if (pendingData.variants) {
+          pendingData.variants.filter(v => v.status === 'PENDING').forEach(v => {
+            allVariants.push({
+              ...v,
+              type: 'PENDING',
+              score: '?',
+              insight: 'Waiting for approval to start testing.'
+            });
+          });
+        }
+
+        // Add Analyzed (Approved/Live)
+        if (data.stats) {
+          data.stats.forEach(s => {
+            allVariants.push({ ...s, type: 'LIVE' });
+          });
+        }
+
+        if (allVariants.length === 0) {
+          grid.innerHTML = `<div style="color:#666; font-style:italic;">No variants active. Ask AI to generate one.</div>`;
+          return;
+        }
+
+        allVariants.forEach(v => {
+          let statusColor = "#777";
+          let actions = "";
+          let badge = "";
+
+          if (v.type === 'PENDING') {
+            statusColor = "#facc15";
+            badge = `<span style="background:${statusColor}; color:#000; padding:2px 6px; border-radius:4px; font-size:0.7rem; font-weight:bold;">PENDING APPROVAL</span>`;
+            actions = `
+                        <div style="margin-top:10px; display:flex; gap:10px;">
+                            <button onclick="updateVariantStatus('${v.id}', 'APPROVED')" style="background:#22c55e; color:#fff; border:none; padding:6px 12px; border-radius:4px; cursor:pointer;">✅ APPROVE</button>
+                            <button onclick="updateVariantStatus('${v.id}', 'REJECTED')" style="border:1px solid #ef4444; color:#ef4444; background:transparent; padding:6px 12px; border-radius:4px; cursor:pointer;">❌ REJECT</button>
+                        </div>
+                    `;
+          } else {
+            // LIVE VARIANT
+            if (v.status === 'SCALE') statusColor = "#22c55e";
+            if (v.status === 'PAUSE') statusColor = "#ef4444";
+            if (v.status === 'TEST MORE') statusColor = "#38bdf8";
+
+            badge = `<span style="background:${statusColor}; color:#fff; padding:2px 6px; border-radius:4px; font-size:0.7rem; font-weight:bold;">${v.status}</span>`;
+            actions = `
+                         <div style="margin-top:10px; padding-top:10px; border-top:1px solid #333; font-size:0.85rem;">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                                <span>CTR: <b>${v.ctr}%</b></span>
+                                <span>Leads: <b>${v.leadRate}%</b></span>
+                            </div>
+                            <div style="color:${statusColor}; font-weight:bold;">Score: ${v.score}/100</div>
+                            <div style="font-size:0.8rem; color:#aaa; margin-top:5px;">AI: "${v.insight}"</div>
+                            <div style="margin-top:5px; font-size:0.75rem;"><a href="/index.html?v=${v.id}" target="_blank" style="color:#fff;">View Live Page</a></div>
+                        </div>
+                    `;
+          }
+
+          grid.innerHTML += `
+                    <div style="background:rgba(0,0,0,0.3); border:1px solid ${statusColor}; border-radius:12px; padding:20px;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;">
+                            <h3 style="margin:0; font-size:1rem; color:#fff;">${v.name || v.variant_name}</h3>
+                            ${badge}
+                        </div>
+                        <div style="color:#ccc; font-style:italic; font-size:0.9rem; margin-bottom:10px;">"${v.headline}"</div>
+                        ${actions}
+                    </div>
+                `;
+        });
+
+      } catch (e) { console.error(e); }
+    }
+
+    async function proposeVariant() {
+      const btn = document.querySelector('button[onclick="proposeVariant()"]');
+      btn.disabled = true;
+      document.getElementById("genStatus").innerText = " AI Generating...";
+
+      await fetch('/api/variant/propose', { method: 'POST' });
+
+      document.getElementById("genStatus").innerText = " Done!";
+      btn.disabled = false;
+      loadVariants();
+    }
+
+    async function applyAI() {
+      if (!confirm("⚠️ AUTOMATION SAFETY CHECK\n\nThis will update your live traffic routing based on AI scores.\n\n- Winners will get ~80% traffic\n- Testers will get ~20%\n- Losers will be paused\n\nProceed?")) return;
+
+      const btn = document.querySelector('button[onclick="applyAI()"]');
+      btn.disabled = true;
+      btn.innerText = "⏳ OPTIMIZING...";
+
+      try {
+        const res = await fetch('/api/variant/apply-weights', { method: 'POST' });
+        const data = await res.json();
+        alert("✅ AI Optimization Complete.\n\n- Updated variants: " + data.updates.length);
+        loadVariants(); // Reload to see changes
+      } catch (e) {
+        alert("Error applying weights.");
+        console.error(e);
+      }
+
+      btn.disabled = false;
+      btn.innerHTML = "<span>⚡ APPLY AI RECOMMENDATIONS</span>";
+    }
+
+    async function updateVariantStatus(id, status) {
+      await fetch('/api/variant/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status })
+      });
+      loadVariants();
+    }
+
+    loadVariants();
+    setInterval(loadVariants, 10000);
+
+    // --- WATCHDOG LOGIC ---
+    async function pollWatchdog() {
+      try {
+        const res = await fetch('/api/traffic/monitor'); // Trigger the check
+        const data = await res.json();
+
+        const logsDiv = document.getElementById("logsFeed");
+
+        if (data.logs && data.logs.length > 0) {
+          logsDiv.innerHTML = "";
+          data.logs.forEach(log => {
+            const time = new Date(log.created_at).toLocaleTimeString();
+            let color = "#fff";
+            if (log.event_type === "ROLLBACK") color = "#ef4444";
+
+            logsDiv.innerHTML += `
+                        <div style="padding:5px 0; border-bottom:1px solid #333;">
+                            <span style="color:#777;">[${time}]</span> 
+                            <b style="color:${color}">${log.event_type}</b>: ${log.message}
+                        </div>
+                    `;
+          });
+        } else {
+          logsDiv.innerHTML = `<div style="padding:5px 0; color:#4ade80;">[SYSTEM] All systems nominal. No incidents reported.</div>`;
+        }
+
+      } catch (e) { console.error("Watchdog error", e); }
+    }
+
+    pollWatchdog();
+    setInterval(pollWatchdog, 15000); // Check every 15s
+
   </script>
 
 </body>

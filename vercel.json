@@ -12,6 +12,18 @@
   ],
   "routes": [
     {
+      "src": "/api/traffic/(.*)",
+      "dest": "/api/traffic/$1.js"
+    },
+    {
+      "src": "/api/variant/(.*)",
+      "dest": "/api/variant/$1.js"
+    },
+    {
+      "src": "/api/ai/(.*)",
+      "dest": "/api/ai/$1.js"
+    },
+    {
       "src": "/api/(.*)",
       "dest": "/api/$1.js"
     },

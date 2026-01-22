@@ -319,6 +319,28 @@
         window.location.href = "bet.html";
       }
     });
+
+    // --- VARIANT APPLIER ---
+    // If URL has ?v=VARIANT_ID, fetch and apply text overrides
+    const urlParams = new URLSearchParams(window.location.search);
+    const vId = urlParams.get('v');
+
+    if (vId) {
+      fetch(`/api/variant/get?id=${vId}`)
+        .then(r => r.json())
+        .then(data => {
+          if (data.variant) {
+            const v = data.variant;
+            // Update Headline
+            if (v.headline) document.querySelector("h1").innerText = v.headline;
+            // Update Subheadline (p tag)
+            if (v.subheadline) document.querySelector(".info-section p").innerText = v.subheadline;
+            // Update CTA
+            if (v.cta_text) document.getElementById("submitPhoneBtn").innerText = v.cta_text;
+          }
+        })
+        .catch(e => console.error("Variant load failed", e));
+    }
   </script>
 </body>
 
