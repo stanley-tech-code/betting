@@ -1,0 +1,6 @@
+{
+  "name": "betting-api",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.91.0"
+  }
+}
