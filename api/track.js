@@ -1,15 +1,18 @@
-
 const { createClient } = require('@supabase/supabase-js');
 const crypto = require('crypto');
 
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+let supabase = null;
+if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY) {
+  supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+}
 
 // Helper to hash IPs
 function hashIP(ip) {
   return crypto.createHash('sha256').update(ip).digest('hex');
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
+  if (!supabase) return res.status(500).json({ error: "Missing Env Vars" });
   // Parsing the 'action' from query params, which we will route in vercel.json
   // e.g. /api/track/visit -> /api/track.js?action=visit
   const { action } = req.query;

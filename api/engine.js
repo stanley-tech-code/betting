@@ -1,9 +1,21 @@
 
 const { createClient } = require('@supabase/supabase-js');
 
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+let supabase = null;
+try {
+  if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY) {
+    supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+  } else {
+    console.warn("Supabase credentials missing!");
+  }
+} catch (error) {
+  console.error("Supabase Init Error:", error);
+}
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
+  if (!supabase) {
+    return res.status(500).json({ error: "Configuration Error: SUPABASE_URL or SUPABASE_SERVICE_KEY is missing in Vercel. Please add them in Settings." });
+  }
   const { action } = req.query;
 
   // --- VARIANT: PROPOSE ---

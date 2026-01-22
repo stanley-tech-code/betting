@@ -352,7 +352,7 @@
         <div style="margin-top:20px; border-top:1px solid var(--border); padding-top:20px;">
           <button
             style="width:100%; padding:10px; background:var(--surface-hover); border:1px solid var(--border); color:#fff; border-radius:6px; cursor:pointer;"
-            onclick="window.location.href='/api/stats/download-leads'">Export Data</button>
+            onclick="window.location.href='/api/stats?action=download-leads'">Export Data</button>
         </div>
       </div>
     </div>
@@ -453,7 +453,7 @@
 
     // --- STANDARD DASHBOARD LOGIC ---
     async function loadStats() {
-      const res = await fetch('/api/stats/dashboard-summary');
+      const res = await fetch('/api/stats?action=dashboard-summary');
       const data = await res.json();
 
       let tv = 0, tl = 0, tc = 0;
@@ -467,7 +467,7 @@
     }
 
     async function loadCharts() {
-      const hRes = await fetch('/api/stats/history');
+      const hRes = await fetch('/api/stats?action=history');
       const hData = await hRes.json();
 
       new Chart(document.getElementById('mainChart'), {
@@ -494,7 +494,7 @@
     }
 
     async function loadAI() {
-      const res = await fetch('/api/variant/analyze');
+      const res = await fetch('/api/engine?action=analyze');
       const data = await res.json();
       const feed = document.getElementById('aiFeed');
       const table = document.querySelector("#variantTable tbody");
@@ -540,7 +540,7 @@
     }
 
     async function pollWatchdog() {
-      const res = await fetch('/api/traffic/monitor');
+      const res = await fetch('/api/traffic?action=monitor');
       const data = await res.json();
       if (data.alerts && data.alerts.length > 0) {
         const alertArea = document.getElementById("alertsArea");
@@ -552,12 +552,13 @@
     }
 
     async function apply(id, weight, status) {
-      await fetch('/api/variant/apply-manual', {
+      await fetch('/api/engine?action=apply-manual', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id, weight, status })
       });
-      alert("Updated internal records. Don't forget to update Propeller Ads!");
+      // Also user must do it manually in Propeller
+      alert("Updated internal records.\n\n⚠️ IMPORTANT: Now go to Propeller Ads and set this link to " + weight + "% traffic.");
       loadAI();
     }
 

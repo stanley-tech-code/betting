@@ -1,9 +1,12 @@
-
 const { createClient } = require('@supabase/supabase-js');
 
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+let supabase = null;
+if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY) {
+  supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+}
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
+  if (!supabase) return res.status(500).json({ error: "Missing Env Vars" });
   const { action } = req.query;
 
   // --- MONITOR (Rollback Logic) ---
