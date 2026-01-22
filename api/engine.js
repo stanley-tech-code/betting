@@ -82,6 +82,24 @@ export default async function handler(req, res) {
 
         return { id: v.id, name: v.variant_name, headline: v.headline, visits: vVisits, leads: vLeads, ctr: (ctr * 100).toFixed(2), leadRate: (leadRate * 100).toFixed(2), score, status, insight };
       });
+
+      // 2. Calculate Recommended Weights (Normalization for Manual Mode)
+      let scaleCount = variantStats.filter(v => v.status === 'SCALE').length;
+      let testCount = variantStats.filter(v => v.status === 'TEST MORE' || v.status === 'TEST').length;
+
+      let totalScale = (scaleCount > 0) ? (testCount > 0 ? 80 : 100) : 0;
+      let totalTest = (testCount > 0) ? (scaleCount > 0 ? 20 : 100) : 0;
+      if (scaleCount === 0 && testCount === 0) { totalScale = 100; scaleCount = 1; }
+
+      const wScale = scaleCount > 0 ? Math.floor(totalScale / scaleCount) : 0;
+      const wTest = testCount > 0 ? Math.floor(totalTest / testCount) : 0;
+
+      variantStats.forEach(v => {
+        if (v.status === 'SCALE') v.suggested_weight = wScale;
+        else if (v.status === 'TEST MORE' || v.status === 'TEST') v.suggested_weight = wTest;
+        else v.suggested_weight = 0;
+      });
+
       return res.status(200).json({ success: true, stats: variantStats });
     } catch (e) { return res.status(500).json({ error: e.message }); }
   }
