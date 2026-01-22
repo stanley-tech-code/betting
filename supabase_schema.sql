@@ -1,4 +1,34 @@
 
+
+-- TRACKING TABLES (Core Data Collection)
+-- These tables store the actual visit, click, and lead data
+
+CREATE TABLE IF NOT EXISTS visits (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  session_id text NOT NULL,
+  landing_id text,
+  source text,
+  country text,
+  ip_hash text,
+  created_at timestamptz DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS clicks (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  session_id text NOT NULL,
+  landing_id text,
+  created_at timestamptz DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS leads (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  session_id text NOT NULL,
+  landing_id text,
+  phone text,
+  country text,
+  created_at timestamptz DEFAULT now()
+);
+
 -- 1. VARIANTS TABLE (Update or Create)
 -- Only run CREATE if it doesn't exist, otherwise you might need to ALTER table to add columns.
 -- Assuming we can just create if not exists, but user might need to add columns manually if table exists.

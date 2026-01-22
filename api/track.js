@@ -25,13 +25,18 @@ module.exports = async function handler(req, res) {
     const hashedIp = hashIP(ip);
 
     try {
-      await supabase.from('visits').insert({
+      const { data, error } = await supabase.from('visits').insert({
         session_id: sessionId,
         landing_id: landingId,
         source: source || 'direct',
-        country: country || 'unknown',
         ip_hash: hashedIp
       });
+
+      if (error) {
+        console.error("Visit Error", error);
+        return res.status(500).json({ error: error.message });
+      }
+
       return res.status(200).json({ success: true });
     } catch (e) {
       console.error("Visit Error", e);
@@ -44,10 +49,16 @@ module.exports = async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).send("Method Not Allowed");
     const { sessionId, landingId } = req.body;
     try {
-      await supabase.from('clicks').insert({
+      const { data, error } = await supabase.from('clicks').insert({
         session_id: sessionId,
         landing_id: landingId,
       });
+
+      if (error) {
+        console.error("Click Error", error);
+        return res.status(500).json({ error: error.message });
+      }
+
       return res.status(200).json({ success: true });
     } catch (e) {
       console.error("Click Error", e);
@@ -61,11 +72,17 @@ module.exports = async function handler(req, res) {
     const { sessionId, landingId, phone } = req.body;
     try {
       // Save to DB
-      await supabase.from('leads').insert({
+      const { data, error } = await supabase.from('leads').insert({
         session_id: sessionId,
         landing_id: landingId,
         phone: phone
       });
+
+      if (error) {
+        console.error("Lead Error", error);
+        return res.status(500).json({ error: error.message });
+      }
+
       return res.status(200).json({ success: true });
     } catch (e) {
       console.error("Lead Error", e);

@@ -20,20 +20,10 @@ module.exports = async function handler(req, res) {
         supabase.from('leads').select('*').gte('created_at', oneDayAgo)
       ]);
 
-      // Mock Data if empty (for Demo Purposes)
+      // Get real data from database
       let visits = visitsRes.data || [];
       let clicks = clicksRes.data || [];
       let leads = leadsRes.data || [];
-
-      if (visits.length === 0) {
-        return res.status(200).json({
-          stats: {
-            "Sheng Hype": { visits: 450, clicks: 120, leads: 45, ctr: 26.6 },
-            "Urgency Red": { visits: 300, clicks: 90, leads: 10, ctr: 30.0 },
-            "Exclusive": { visits: 100, clicks: 10, leads: 2, ctr: 10.0 }
-          }
-        });
-      }
 
       // Real Aggregation Logic
       const stats = {};
