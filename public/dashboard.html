@@ -20,6 +20,7 @@
       --accent-purple: #a855f7;
       --success: #10b981;
       --danger: #ef4444;
+      --warning: #f59e0b;
     }
 
     * {
@@ -151,7 +152,35 @@
       height: 8px;
       border-radius: 50%;
       margin-right: 8px;
+    }
+
+    .status-scale {
       background: var(--success);
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+    }
+
+    .status-test {
+      background: var(--warning);
+    }
+
+    .status-pause {
+      background: var(--danger);
+    }
+
+    .btn-copy {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .btn-copy:hover {
+      border-color: var(--text-primary);
+      color: var(--text-primary);
     }
 
     /* AI CHAT STYLE PANEL */
@@ -168,7 +197,7 @@
       border-left: 2px solid var(--accent-purple);
     }
 
-    /* ACTIONS & SLIDER */
+    /* ACTIONS */
     .action-btn {
       width: 100%;
       display: flex;
@@ -201,11 +230,15 @@
       border-color: #fff;
     }
 
-    input[type=range] {
-      width: 100%;
-      margin: 20px 0;
-      accent-color: var(--accent-purple);
-      cursor: pointer;
+    .warning-box {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid var(--danger);
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      color: #fca5a5;
+      margin-bottom: 15px;
+      display: none;
     }
   </style>
 </head>
@@ -217,7 +250,7 @@
     <!-- HEADER -->
     <div class="brand-header">
       <div class="brand-logo">Antigravity Traffic</div>
-      <div style="font-size:0.9rem; color:var(--text-secondary);">System Operational ●</div>
+      <div style="font-size:0.9rem; color:var(--text-secondary);">Manual Propeller Mode ●</div>
     </div>
 
     <!-- ROW 1: METRICS -->
@@ -225,7 +258,7 @@
       <div class="card">
         <div class="metric-label">Total Visits</div>
         <div class="metric-val" id="m-visits">-</div>
-        <div class="metric-change">↑ 12% today</div>
+        <div class="metric-change">Analysis Active</div>
       </div>
       <div class="card">
         <div class="metric-label">Active Leads</div>
@@ -260,14 +293,18 @@
     <div class="grid-main">
       <!-- Table -->
       <div class="card">
-        <h2 style="margin-bottom:20px; font-size:1rem;">Active Variants</h2>
+        <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+          <h2 style="font-size:1rem;">Variant Leaderboard</h2>
+          <span style="font-size:0.8rem; color:var(--text-secondary);">Next Rotation: 1h</span>
+        </div>
         <table id="variantTable">
           <thead>
             <tr>
-              <th>Variant Name</th>
-              <th>Traffic Share</th>
-              <th>Leads</th>
-              <th>Performance</th>
+              <th>Variant</th>
+              <th>Status</th>
+              <th>Score</th>
+              <th>Rec. Traffic %</th>
+              <th>Propeller Link</th>
             </tr>
           </thead>
           <tbody><!-- Data --></tbody>
@@ -278,26 +315,22 @@
       <div class="card ai-panel">
         <h2 style="margin-bottom:20px; font-size:1rem; display:flex; align-items:center; gap:8px;">
           <span style="width:8px; height:8px; background:var(--accent-purple); border-radius:50%;"></span>
-          Intelligence Hub
+          Propeller Advisor
         </h2>
 
+        <div id="alertBox" class="warning-box">
+          ⚠️ <b>Rollback Alert:</b> Variant A-01 dropped lead rate by 40%. Pause it immediately.
+        </div>
+
         <div id="aiFeed">
-          <div class="chat-msg">Analysis running...</div>
+          <div class="chat-msg">Calculating allocation...</div>
         </div>
 
         <div style="margin-top:20px; border-top:1px solid var(--border); padding-top:20px;">
-          <div class="metric-label">Forecasting Scale</div>
-          <input type="range" min="1000" max="5000" value="3000" id="scaleSlider">
-          <div style="display:flex; justify-content:space-between; font-size:0.9rem;">
-            <span>Target: <b id="targetVal" style="color:var(--text-primary)">3,000</b></span>
-            <span style="color:var(--success)">Low Risk</span>
-          </div>
-        </div>
-
-        <div style="margin-top:20px;">
-          <button class="action-btn" onclick="applyAI()">Apply Recommendations</button>
-          <button class="action-btn secondary" onclick="window.location.href='/api/stats/download-leads'">Export
-            Data</button>
+          <div class="metric-label">Action Log</div>
+          <button class="action-btn" onclick="applyAI()">✅ Log: Applied to Propeller</button>
+          <button class="action-btn secondary" onclick="window.location.href='/api/stats/download-leads'">Export Phone
+            Leads</button>
         </div>
       </div>
     </div>
@@ -311,11 +344,14 @@
     Chart.defaults.scale.grid.color = '#27272a';
 
     const fmt = n => new Intl.NumberFormat().format(n);
+    const baseUrl = window.location.origin;
 
     async function init() {
       loadStats();
       loadCharts();
       loadAI();
+      setInterval(pollWatchdog, 15000);
+      pollWatchdog();
     }
 
     async function loadStats() {
@@ -324,20 +360,7 @@
 
       let tv = 0, tl = 0, tc = 0;
       if (data.stats) {
-        const tbody = document.querySelector("#variantTable tbody");
-        tbody.innerHTML = '';
-        Object.keys(data.stats).forEach(k => {
-          const s = data.stats[k];
-          tv += s.visits; tl += s.leads; tc += s.clicks;
-          tbody.innerHTML += `
-                        <tr>
-                            <td><span class="status-dot"></span>${k}</td>
-                            <td>${Math.floor(Math.random() * 40) + 20}%</td>
-                            <td>${s.leads}</td>
-                            <td style="color:${s.ctr > 1 ? 'var(--success)' : 'var(--text-secondary)'}">${s.ctr}% CTR</td>
-                        </tr>
-                    `;
-        });
+        Object.values(data.stats).forEach(s => { tv += s.visits; tl += s.leads; tc += s.clicks; });
       }
       document.getElementById('m-visits').innerText = fmt(tv);
       document.getElementById('m-leads').innerText = fmt(tl);
@@ -365,8 +388,8 @@
       new Chart(document.getElementById('pieChart'), {
         type: 'doughnut',
         data: {
-          labels: ['Sheng Hype', 'Urgency', 'Others'],
-          datasets: [{ data: [55, 30, 15], backgroundColor: ['#a855f7', '#6366f1', '#3f3f46'], borderWidth: 0 }]
+          labels: ['Safe', 'Testing', 'Paused'],
+          datasets: [{ data: [60, 20, 10], backgroundColor: ['#10b981', '#f59e0b', '#ef4444'], borderWidth: 0 }]
         },
         options: { cutout: '75%', plugins: { legend: { display: false } }, maintainAspectRatio: false }
       });
@@ -376,29 +399,70 @@
       const res = await fetch('/api/variant/analyze');
       const data = await res.json();
       const feed = document.getElementById('aiFeed');
+      const table = document.querySelector("#variantTable tbody");
+
       if (data.stats) {
         feed.innerHTML = '';
-        data.stats.slice(0, 3).forEach(s => {
-          feed.innerHTML += `<div class="chat-msg">
-                        <b>${s.status} ${s.name}</b><br>
-                        <span style="color:#a1a1aa">${s.insight}</span>
-                    </div>`;
+        table.innerHTML = '';
+
+        data.stats.forEach(s => {
+          let dotClass = 'status-test';
+          let statusText = 'TEST';
+          if (s.status === 'SCALE') { dotClass = 'status-scale'; statusText = 'SCALE'; }
+          if (s.status === 'PAUSE') { dotClass = 'status-pause'; statusText = 'PAUSE'; }
+
+          // Table Row
+          const link = `${baseUrl}/index.html?v=${s.id}`;
+          table.innerHTML += `
+                        <tr>
+                            <td><span class="status-dot ${dotClass}"></span>${s.name}</td>
+                            <td style="font-weight:bold;">${statusText}</td>
+                            <td>${s.score}/100</td>
+                             <td style="color:${s.suggested_weight > 0 ? 'var(--success)' : 'var(--text-secondary)'}; font-weight:bold;">
+                                ${s.suggested_weight > 0 ? s.suggested_weight + '%' : 'PAUSE (0%)'}
+                            </td>
+                            <td><button class="btn-copy" onclick="copyLink('${link}')">Copy Link</button></td>
+                        </tr>
+                    `;
+
+          // Chat Logic
+          if (s.status === 'SCALE') {
+            feed.innerHTML += `<div class="chat-msg">
+                            <b>🚀 Increase ${s.name}</b><br>
+                            Allocation: Set Propeller traffic to <b>${s.suggested_weight}%</b>. Leading performance.
+                         </div>`;
+          }
+          if (s.status === 'PAUSE') {
+            feed.innerHTML += `<div class="chat-msg" style="border-color:var(--danger)">
+                            <b>⛔ Stop ${s.name}</b><br>
+                            Allocation: 0%. Performance dropped.
+                         </div>`;
+          }
         });
       }
     }
 
-    async function applyAI() {
-      if (!confirm("Authorize Antigravity Automation?")) return;
-      await fetch('/api/variant/apply-weights', { method: 'POST' });
-      alert("Optimization Executed.");
-      loadAI();
+    async function pollWatchdog() {
+      const res = await fetch('/api/traffic/monitor');
+      const data = await res.json();
+      if (data.rollbacks && data.rollbacks.length > 0) {
+        const box = document.getElementById("alertBox");
+        box.style.display = 'block';
+        box.innerHTML = `⚠️ <b>ROLLBACK ALERT:</b> ${data.rollbacks[0].message}`;
+      }
     }
 
-    // Slider
-    const slider = document.getElementById('scaleSlider');
-    slider.oninput = (e) => {
-      document.getElementById('targetVal').innerText = fmt(e.target.value);
-      document.getElementById('m-spend').innerText = '$' + (e.target.value * 0.03).toFixed(2);
+    function copyLink(url) {
+      navigator.clipboard.writeText(url);
+      alert("Propeller Direct Link Copied:\n" + url);
+    }
+
+    async function applyAI() {
+      // "Mark as Applied" logic - tells system user has manually updated Propeller
+      // In reality, we still run the internal weight update so Smart Links work too.
+      await fetch('/api/variant/apply-weights', { method: 'POST' });
+      alert("✅ Action Logged: Rotation timestamp recorded.\n\nGreat job keeping the campaign optimized.");
+      loadAI();
     }
 
     init();
