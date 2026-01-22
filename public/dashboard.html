@@ -194,7 +194,7 @@
       background: #9333ea;
     }
 
-    /* AI CHAT STYLE PANEL */
+    /* AI DISPLAY */
     .ai-panel {
       background: linear-gradient(180deg, var(--surface) 0%, #1c1c22 100%);
     }
@@ -215,6 +215,56 @@
       padding: 10px;
       font-size: 0.85rem;
       margin-bottom: 10px;
+    }
+
+    /* CALC INPUTS */
+    .calc-input-group {
+      margin-bottom: 15px;
+    }
+
+    .calc-input-group label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-bottom: 5px;
+    }
+
+    .calc-input-group input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 8px;
+      border-radius: 6px;
+      font-family: 'Inter';
+    }
+
+    .calc-result-box {
+      background: rgba(168, 85, 247, 0.05);
+      border: 1px solid rgba(168, 85, 247, 0.2);
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .calc-val {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .calc-sub {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+    }
+
+    .profit-pos {
+      color: var(--success);
+    }
+
+    .profit-neg {
+      color: var(--danger);
     }
   </style>
 </head>
@@ -295,17 +345,61 @@
           <span style="width:8px; height:8px; background:var(--accent-purple); border-radius:50%;"></span>
           Propeller Advisor
         </h2>
-
         <div id="alertsArea"></div>
-
         <div id="aiFeed">
           <div class="chat-msg">Calculating allocation...</div>
         </div>
-
         <div style="margin-top:20px; border-top:1px solid var(--border); padding-top:20px;">
           <button
             style="width:100%; padding:10px; background:var(--surface-hover); border:1px solid var(--border); color:#fff; border-radius:6px; cursor:pointer;"
             onclick="window.location.href='/api/stats/download-leads'">Export Data</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 4: PROFIT CALCULATOR -->
+    <div class="card"
+      style="background: linear-gradient(180deg, var(--surface) 0%, #151518 100%); border-top: 2px solid var(--accent-purple);">
+      <h2 style="margin-bottom:20px; font-size:1rem;">💰 Financial Projection Console</h2>
+
+      <div class="grid-4">
+        <!-- Inputs -->
+        <div>
+          <div class="calc-input-group">
+            <label>Daily Budget ($)</label>
+            <input type="number" id="c-budget" value="100" oninput="calc()">
+          </div>
+          <div class="calc-input-group">
+            <label>Avg CPC ($)</label>
+            <input type="number" id="c-cpc" value="0.03" step="0.01" oninput="calc()">
+          </div>
+        </div>
+        <div>
+          <div class="calc-input-group">
+            <label>Exp. Conversion Rate (%)</label>
+            <input type="number" id="c-cr" value="4.5" step="0.1" oninput="calc()">
+          </div>
+          <div class="calc-input-group">
+            <label>CPA (Revenue per Lead $)</label>
+            <input type="number" id="c-cpa" value="1.50" step="0.1" oninput="calc()">
+          </div>
+        </div>
+
+        <!-- Results -->
+        <div class="calc-result-box">
+          <div class="calc-val" id="r-leads">0</div>
+          <div class="calc-sub">Est. Daily Leads</div>
+          <div style="margin-top:10px; font-size:0.9rem; color:var(--text-secondary);">
+            Visits: <span id="r-visits" style="color:#fff">0</span>
+          </div>
+        </div>
+
+        <div class="calc-result-box" style="border-color:rgba(16, 185, 129, 0.2); background:rgba(16, 185, 129, 0.05);">
+          <div class="calc-val profit-pos" id="r-profit">$0.00</div>
+          <div class="calc-sub">Net Profit (Daily)</div>
+          <div style="margin-top:10px; font-size:0.9rem;">
+            ROI: <span id="r-roi">0%</span>
+          </div>
         </div>
       </div>
     </div>
@@ -325,10 +419,39 @@
       loadStats();
       loadCharts();
       loadAI();
+      calc(); // Run Calc once
       setInterval(pollWatchdog, 10000);
       pollWatchdog();
     }
 
+    // --- CALCULATOR LOGIC ---
+    function calc() {
+      const budget = parseFloat(document.getElementById('c-budget').value) || 0;
+      const cpc = parseFloat(document.getElementById('c-cpc').value) || 0;
+      const cr = parseFloat(document.getElementById('c-cr').value) || 0;
+      const cpa = parseFloat(document.getElementById('c-cpa').value) || 0;
+
+      if (cpc <= 0) return;
+
+      const visits = Math.floor(budget / cpc);
+      const leads = Math.floor(visits * (cr / 100));
+      const revenue = leads * cpa;
+      const profit = revenue - budget;
+      const roi = budget > 0 ? ((profit / budget) * 100).toFixed(1) : 0;
+
+      document.getElementById('r-visits').innerText = fmt(visits);
+      document.getElementById('r-leads').innerText = fmt(leads);
+
+      const pEl = document.getElementById('r-profit');
+      pEl.innerText = '$' + profit.toFixed(2);
+      pEl.className = profit >= 0 ? 'calc-val profit-pos' : 'calc-val profit-neg';
+
+      const rEl = document.getElementById('r-roi');
+      rEl.innerText = roi + '%';
+      rEl.style.color = roi >= 0 ? 'var(--success)' : 'var(--danger)';
+    }
+
+    // --- STANDARD DASHBOARD LOGIC ---
     async function loadStats() {
       const res = await fetch('/api/stats/dashboard-summary');
       const data = await res.json();
@@ -434,8 +557,7 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id, weight, status })
       });
-      // Also user must do it manually in Propeller
-      alert("Updated internal records.\n\n⚠️ IMPORTANT: Now go to Propeller Ads and set this link to " + weight + "% traffic.");
+      alert("Updated internal records. Don't forget to update Propeller Ads!");
       loadAI();
     }
 
