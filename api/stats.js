@@ -60,6 +60,21 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({ labels, datasets: { visits } });
   }
 
+  // --- RECENT LEADS (JSON) ---
+  if (action === 'get-recent-leads') {
+    try {
+      const { data: leads } = await supabase
+        .from('leads')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(50); // Show last 50
+      return res.status(200).json({ leads: leads || [] });
+    } catch (e) {
+      console.error(e);
+      return res.status(500).json({ error: e.message });
+    }
+  }
+
   // --- DOWNLOAD LEADS (CSV) ---
   if (action === 'download-leads') {
     try {
@@ -70,7 +85,8 @@ module.exports = async function handler(req, res) {
       const csvRows = [];
       csvRows.push("Date,Phone,Country,LandingID");
       leads.forEach(l => {
-        csvRows.push(`${l.created_at},${l.phone_number},${l.country},${l.landing_id}`);
+        // Fix: Use correct column 'phone'
+        csvRows.push(`${l.created_at},${l.phone},${l.country},${l.landing_id}`);
       });
 
       res.setHeader('Content-Type', 'text/csv');
