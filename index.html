@@ -73,6 +73,33 @@
 
     /* ... */
 
+    /* ANIMATION */
+    @keyframes fly {
+      0% {
+        transform: translate(-50px, 50px) scale(0.8);
+        opacity: 0;
+      }
+
+      20% {
+        opacity: 1;
+      }
+
+      100% {
+        transform: translate(300px, -150px) scale(1.2);
+        opacity: 0;
+      }
+    }
+
+    @keyframes pulseText {
+      from {
+        transform: scale(1);
+      }
+
+      to {
+        transform: scale(1.05);
+      }
+    }
+
     /* HERO CARD */
     .hero {
       padding: 40px 24px;
@@ -84,6 +111,44 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .plane-bg {
+      position: absolute;
+      top: 20%;
+      left: 0;
+      width: 250px;
+      height: auto;
+      opacity: 0.15;
+      z-index: 0;
+      animation: fly 8s infinite linear;
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .reg-bonus-row {
+      margin: 20px 0;
+      border-top: 1px solid #333;
+      padding-top: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      align-items: center;
+    }
+
+    .reg-bonus-highlight {
+      color: var(--betika-yellow);
+      font-weight: 900;
+      font-size: 1.8rem;
+      text-transform: uppercase;
+      text-shadow: 0 0 10px rgba(255, 210, 0, 0.5);
+      animation: pulseText 1.5s infinite alternate;
     }
 
     .status-pill {
@@ -226,28 +291,32 @@
 
     <!-- HERO -->
     <div class="hero">
-      <div class="status-pill"><span class="dot"></span> LIVE NOW</div>
+      <img src="https://creazilla-store.fra1.digitaloceanspaces.com/cliparts/6007/airplane-clipart-xl.png"
+        alt="Aviator Plane" class="plane-bg">
 
-      <h1>WIN UP TO<br><span style="font-size:1.2em">5 MILLION</span><br>IN SECONDS</h1>
+      <div class="hero-content">
+        <div class="status-pill"><span class="dot"></span> LIVE NOW</div>
 
-      <p class="subtitle">The world's #1 Crash Game.</p>
+        <h1>WIN UP TO<br><span style="font-size:1.2em">5 MILLION</span><br>IN SECONDS</h1>
 
-      <div class="offer-card">
-        <div style="font-size: 0.9rem; text-transform:uppercase; letter-spacing:1px; opacity:0.8;">Possible Win</div>
-        <div class="offer-val">KES 5M+</div>
-        <div style="font-size: 0.9rem; color:#ccc;">Instant Withdrawals</div>
+        <p class="subtitle">The world's #1 Crash Game.</p>
 
-        <div
-          style="margin: 20px 0; border-top: 1px solid #333; padding-top:15px; display:flex; justify-content:space-between; align-items:center;">
-          <span>Register Now:</span>
-          <span style="color:var(--betika-yellow); font-weight:700;">GET FREE 50</span>
+        <div class="offer-card">
+          <div style="font-size: 0.9rem; text-transform:uppercase; letter-spacing:1px; opacity:0.8;">Possible Win</div>
+          <div class="offer-val">KES 5M+</div>
+          <div style="font-size: 0.9rem; color:#ccc;">Instant Withdrawals</div>
+
+          <div class="reg-bonus-row">
+            <span style="font-size:1rem;">Register Account & Get:</span>
+            <span class="reg-bonus-highlight">FREE 50 KES</span>
+          </div>
+
+          <a href="https://boompesa.com/" class="cta-button">PLAY NOW</a>
         </div>
 
-        <a href="https://boompesa.com/" class="cta-button">PLAY NOW</a>
-      </div>
-
-      <div style="margin-top:20px; font-size:0.8rem; font-weight:600;">
-        By joining, you confirm you are 18+
+        <div style="margin-top:20px; font-size:0.8rem; font-weight:600;">
+          By joining, you confirm you are 18+
+        </div>
       </div>
     </div>
 
