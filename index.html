@@ -76,17 +76,11 @@
     /* ANIMATION */
     @keyframes fly {
       0% {
-        transform: translate(-50px, 50px) scale(0.8);
-        opacity: 0;
-      }
-
-      20% {
-        opacity: 1;
+        transform: translate(-300px, 100px) scale(0.6) rotate(-10deg);
       }
 
       100% {
-        transform: translate(300px, -150px) scale(1.2);
-        opacity: 0;
+        transform: translate(120vw, -400px) scale(1.4) rotate(0deg);
       }
     }
 
@@ -117,14 +111,18 @@
 
     .plane-bg {
       position: absolute;
-      top: 20%;
+      bottom: -100px;
+      /* Start lower */
       left: 0;
-      width: 250px;
+      width: 350px;
+      /* Bigger */
       height: auto;
-      opacity: 0.15;
+      opacity: 0.9 !important;
+      /* Force visibility */
       z-index: 0;
-      animation: fly 8s infinite linear;
+      animation: fly 5s infinite linear;
       pointer-events: none;
+      filter: drop-shadow(0 20px 20px rgba(0, 0, 0, 0.4));
     }
 
     .hero-content {
