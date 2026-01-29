@@ -280,25 +280,21 @@
     </div>
 
     <!-- ROW 1: METRICS -->
-    <div class="grid-4">
+    <div class="grid-4" style="grid-template-columns: repeat(3, 1fr);">
       <div class="card">
         <div class="metric-label">Total Visits</div>
         <div class="metric-val" id="m-visits">-</div>
         <div class="metric-change">Analysis Active</div>
       </div>
       <div class="card">
-        <div class="metric-label">Active Leads</div>
-        <div class="metric-val" id="m-leads">-</div>
-        <div class="metric-change" style="background:rgba(168, 85, 247, 0.1); color:var(--accent-purple)">+5 this hour
+        <div class="metric-label">Total Clicks</div>
+        <div class="metric-val" id="m-clicks">-</div>
+        <div class="metric-change" style="color:var(--accent-purple); background:rgba(168, 85, 247, 0.1);">CTA Taps
         </div>
       </div>
       <div class="card">
         <div class="metric-label">Conversion Rate</div>
         <div class="metric-val" id="m-cr">0.0%</div>
-      </div>
-      <div class="card">
-        <div class="metric-label">Projected Spend</div>
-        <div class="metric-val" id="m-spend">$0</div>
       </div>
     </div>
 
@@ -350,9 +346,7 @@
           <div class="chat-msg">Calculating allocation...</div>
         </div>
         <div style="margin-top:20px; border-top:1px solid var(--border); padding-top:20px;">
-          <button
-            style="width:100%; padding:10px; background:var(--surface-hover); border:1px solid var(--border); color:#fff; border-radius:6px; cursor:pointer;"
-            onclick="window.location.href='/api/stats?action=download-leads'">Export Data</button>
+          <span style="font-size:0.8rem; color:var(--text-secondary);">Logs Disabled</span>
         </div>
       </div>
     </div>
@@ -404,34 +398,7 @@
       </div>
     </div>
 
-    <!-- ROW 5: RECENT LEADS -->
-    <div class="card" style="margin-top:24px;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-        <h2 style="font-size:1rem;">Recent Leads (Last 50)</h2>
-        <div style="display:flex; align-items:center; gap:15px;">
-          <label
-            style="font-size:0.85rem; color:var(--text-secondary); display:flex; align-items:center; gap:8px; cursor:pointer;">
-            <input type="checkbox" id="autoDownloadToggle"
-              style="width:16px; height:16px; accent-color:var(--accent-purple);">
-            Auto-Download on Load
-          </label>
-          <button class="btn-action-sm btn-apply" onclick="downloadLeads()">Download CSV</button>
-        </div>
-      </div>
-      <table id="leadsTable">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Phone</th>
-            <th>Country</th>
-            <th>Landing ID</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Leads Data -->
-        </tbody>
-      </table>
-    </div>
+    <!-- ROW 5: REMOVED (Leads Data) -->
 
   </div>
 
@@ -448,79 +415,18 @@
       loadStats();
       loadCharts();
       loadAI();
-      loadLeads(); // New function
-      checkAutoDownload(); // Check preference
+      // loadLeads(); // Removed
+      // checkAutoDownload(); // Removed
       calc(); // Run Calc once
       setInterval(pollWatchdog, 10000);
       pollWatchdog();
     }
 
     function downloadLeads() {
-      window.location.href = '/api/stats?action=download-leads';
+      alert("Lead Logs have been disabled.");
     }
 
-    function checkAutoDownload() {
-      const toggle = document.getElementById('autoDownloadToggle');
-      const isAuto = localStorage.getItem('auto_download_leads') === 'true';
-      toggle.checked = isAuto;
-
-      if (isAuto) {
-        // Wait a moment for page to settle, then download
-        setTimeout(() => {
-          // Visual feedback
-          const btn = document.querySelector('.btn-apply');
-          if (btn) {
-            const originalText = btn.innerText;
-            btn.innerText = "Downloading...";
-            downloadLeads();
-            setTimeout(() => btn.innerText = originalText, 2000);
-          } else {
-            downloadLeads();
-          }
-        }, 1500);
-      }
-
-      // Save preference on change
-      toggle.addEventListener('change', (e) => {
-        localStorage.setItem('auto_download_leads', e.target.checked);
-        if (e.target.checked) {
-          alert("Auto-Download Enabled.\n\nThe leads CSV will now download automatically every time you open or refresh this dashboard.");
-          downloadLeads(); // Trigger immediate
-        }
-      });
-    }
-
-    async function loadLeads() {
-      try {
-        console.log("Fetching leads...");
-        const res = await fetch('/api/stats?action=get-recent-leads');
-        const data = await res.json();
-        console.log("Leads data:", data);
-
-        const tbody = document.querySelector("#leadsTable tbody");
-        tbody.innerHTML = "";
-
-        if (data.leads && data.leads.length > 0) {
-          data.leads.forEach(l => {
-            const date = l.created_at ? new Date(l.created_at).toLocaleString() : 'N/A';
-            const phoneDisplay = l.phone || l.phone_number || 'N/A';
-            tbody.innerHTML += `
-              <tr>
-                <td style="color:var(--text-secondary); font-size:0.85rem;">${date}</td>
-                <td style="font-weight:600; color:#fff;">${phoneDisplay}</td>
-                <td>${l.country || '-'}</td>
-                <td>${l.landing_id || '-'}</td>
-              </tr>
-            `;
-          });
-        } else {
-          tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:20px; color:var(--text-secondary);">No leads recorded yet.</td></tr>`;
-        }
-      } catch (e) {
-        console.error("Error loading leads", e);
-        document.querySelector("#leadsTable tbody").innerHTML = `<tr><td colspan="4" style="color:red; text-align:center;">Error loading data: ${e.message}</td></tr>`;
-      }
-    }
+    // Leads logic removed as requested
 
     // --- CALCULATOR LOGIC ---
     function calc() {
@@ -559,9 +465,9 @@
         Object.values(data.stats).forEach(s => { tv += s.visits; tl += s.leads; tc += s.clicks; });
       }
       document.getElementById('m-visits').innerText = fmt(tv);
-      document.getElementById('m-leads').innerText = fmt(tl);
+      // Leads removed
       document.getElementById('m-cr').innerText = tv > 0 ? ((tl / tv) * 100).toFixed(1) + '%' : '0%';
-      document.getElementById('m-spend').innerText = '$' + (tv * 0.03).toFixed(2);
+      document.getElementById('m-clicks').innerText = fmt(tc);
     }
 
     async function loadCharts() {

@@ -3,344 +3,380 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AVIATOR - OFFICIAL GAME</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Aviator - Official Partner</title>
+  <meta name="description" content="Secure your KES 50 Match Bonus. Official Registration.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --brand-red: #E91E63;
-      --brand-black: #101010;
-      --secondary-black: #1a1a1a;
-      --text-gray: #B0B0B0;
-      --highlight-green: #4CAF50;
-      --highlight-yellow: #FFD700;
+      --primary-blue: #0A192F;
+      --brand-red: #E31C2D;
+      --text-dark: #1F2937;
+      --text-light: #6B7280;
+      --bg-page: #F3F4F6;
+      --white: #FFFFFF;
+      --success: #10B981;
     }
 
     body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-dark);
       margin: 0;
       padding: 0;
-      background-color: var(--brand-black);
-      color: white;
-      font-family: 'Montserrat', sans-serif;
-      overflow-x: hidden;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* Nav */
+    .container {
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: var(--white);
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+    }
+
+    /* HEADER */
     .navbar {
-      padding: 15px 20px;
-      border-bottom: 1px solid #333;
+      padding: 16px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: var(--secondary-black);
+      border-bottom: 1px solid #E5E7EB;
+      background: var(--white);
     }
 
-    .logo {
-      font-weight: 900;
-      font-size: 1.2rem;
+    .brand {
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: var(--primary-blue);
+      letter-spacing: -0.5px;
+    }
+
+    .brand span {
       color: var(--brand-red);
-      letter-spacing: 1px;
     }
 
-    .login-btn {
-      font-size: 0.9rem;
-      font-weight: bold;
-      color: #fff;
+    .auth-btn {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--primary-blue);
       text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      background: #F3F4F6;
     }
 
-    /* Hero Stats */
-    .hero-stats {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      padding: 20px;
+    /* HERO CARD */
+    .hero {
+      padding: 32px 24px;
       text-align: center;
-      background: linear-gradient(180deg, rgba(233, 30, 99, 0.1) 0%, transparent 100%);
+      background: radial-gradient(circle at top, #EFF6FF 0%, #FFFFFF 100%);
     }
 
-    .stat-box {
-      background: rgba(255, 255, 255, 0.05);
-      padding: 15px;
-      border-radius: 8px;
-    }
-
-    .stat-val {
-      font-size: 1.5rem;
-      font-weight: 900;
-      color: var(--highlight-green);
-      display: block;
-    }
-
-    .stat-label {
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #ECFDF5;
+      color: #047857;
+      padding: 6px 14px;
+      border-radius: 100px;
       font-size: 0.75rem;
-      color: var(--text-gray);
+      font-weight: 700;
       text-transform: uppercase;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
     }
 
-    /* Main Info */
-    .info-section {
-      padding: 20px;
-      text-align: center;
-    }
-
-    h1 {
-      font-size: 2rem;
-      margin: 10px 0;
-      text-transform: uppercase;
-    }
-
-    p {
-      color: var(--text-gray);
-      font-size: 0.95rem;
-      line-height: 1.5;
-      margin-bottom: 30px;
-    }
-
-    /* Bonus Badge */
-    .bonus-badge {
-      background: linear-gradient(45deg, #FFD700, #FFA500);
-      color: #000;
-      padding: 10px 20px;
-      border-radius: 50px;
-      font-weight: 900;
-      font-size: 0.9rem;
-      display: inline-block;
-      margin-bottom: 20px;
-      box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
-      animation: pulse 1.5s infinite;
+    .dot {
+      width: 8px;
+      height: 8px;
+      background: #10B981;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
     }
 
     @keyframes pulse {
       0% {
-        transform: scale(1);
-        box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
       }
 
-      50% {
-        transform: scale(1.05);
-        box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
+      70% {
+        box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
       }
 
       100% {
-        transform: scale(1);
-        box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
       }
     }
 
-    /* Registration Form (The Lead Capture) */
-    .reg-box {
-      background: var(--secondary-black);
-      padding: 25px;
-      border-radius: 15px;
-      border: 1px solid #333;
-      max-width: 400px;
-      margin: 0 auto;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--primary-blue);
+      margin: 0 0 16px 0;
+      line-height: 1.1;
+      letter-spacing: -1px;
     }
 
-    .reg-header {
-      font-size: 1.2rem;
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
-
-    .offer-highlight {
-      color: var(--highlight-yellow);
-      font-weight: bold;
+    p.subtitle {
       font-size: 1rem;
-      margin-bottom: 20px;
-      display: block;
+      color: var(--text-light);
+      margin-bottom: 32px;
+      max-width: 90%;
+      margin-left: auto;
+      margin-right: auto;
     }
 
-    input {
-      width: 100%;
-      padding: 15px;
-      background: #000;
-      border: 1px solid #444;
-      border-radius: 8px;
-      color: #fff;
-      font-family: 'Montserrat', sans-serif;
-      font-size: 1rem;
-      margin-bottom: 15px;
-      box-sizing: border-box;
+    /* OFFER CARD */
+    .offer-card {
+      border: 1px solid #E5E7EB;
+      border-radius: 16px;
+      padding: 24px;
+      background: var(--white);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      /* Soft sophisticated shadow */
+      margin-bottom: 40px;
     }
 
-    input:focus {
-      border-color: var(--brand-red);
-      outline: none;
-    }
-
-    button {
-      width: 100%;
-      padding: 15px;
-      background: var(--brand-red);
-      color: white;
-      border: none;
-      border-radius: 30px;
-      font-size: 1.1rem;
-      font-weight: 900;
-      text-transform: uppercase;
-      cursor: pointer;
-      box-shadow: 0 5px 15px rgba(233, 30, 99, 0.4);
-      transition: transform 0.2s;
-    }
-
-    button:hover {
-      transform: scale(1.02);
-    }
-
-    /* Winners List */
-    .winners-section {
-      margin-top: 40px;
-      padding: 20px;
-    }
-
-    .section-title {
-      font-size: 1rem;
-      color: var(--brand-red);
-      margin-bottom: 15px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    .winner-row {
+    .offer-row {
       display: flex;
       justify-content: space-between;
-      padding: 12px 0;
-      border-bottom: 1px solid #222;
-      font-size: 0.9rem;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #F3F4F6;
     }
 
-    .w-amt {
-      color: var(--highlight-green);
-      font-weight: bold;
+    .offer-item h3 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: var(--text-light);
+      margin: 0 0 4px 0;
+      letter-spacing: 0.5px;
+    }
+
+    .offer-item .val {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary-blue);
+    }
+
+    .plus-icon {
+      font-size: 1.5rem;
+      color: #D1D5DB;
+      font-weight: 300;
+    }
+
+    .total-row {
+      text-align: center;
+      color: var(--success);
+      font-weight: 600;
+      font-size: 1.125rem;
+      margin-bottom: 24px;
+    }
+
+    /* CTA BUTTON */
+    .cta-button {
+      display: block;
+      width: 100%;
+      background: var(--brand-red);
+      color: var(--white);
+      font-size: 1.125rem;
+      font-weight: 600;
+      text-align: center;
+      padding: 18px;
+      border-radius: 12px;
+      text-decoration: none;
+      box-shadow: 0 4px 12px rgba(227, 28, 45, 0.25);
+      transition: all 0.2s ease;
+    }
+
+    .cta-button:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 5px rgba(227, 28, 45, 0.2);
+    }
+
+    /* FEATURES / TRUST */
+    .features-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      padding: 0 24px 40px;
+    }
+
+    .feat-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.875rem;
+      color: var(--text-dark);
+      font-weight: 500;
+    }
+
+    .check-circle {
+      width: 20px;
+      height: 20px;
+      background: #ECFDF5;
+      color: #10B981;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      flex-shrink: 0;
+    }
+
+    /* FOOTER */
+    footer {
+      margin-top: auto;
+      background: #F9FAFB;
+      padding: 32px 24px;
+      text-align: center;
+      border-top: 1px solid #E5E7EB;
+    }
+
+    .logos {
+      font-size: 1.5rem;
+      margin-bottom: 16px;
+      opacity: 0.5;
+      filter: grayscale(100%);
+    }
+
+    .legal {
+      font-size: 0.75rem;
+      color: #9CA3AF;
+      line-height: 1.4;
     }
   </style>
 </head>
 
 <body>
 
-  <nav class="navbar">
-    <div class="logo">AVIATOR</div>
-    <a href="#" class="login-btn">LOGIN</a>
-  </nav>
+  <div class="container">
+    <!-- NAV -->
+    <nav class="navbar">
+      <div class="brand">AVIATOR<span>KE</span></div>
+      <a href="https://boompesa.com/" class="auth-btn">Log In</a>
+    </nav>
 
-  <div class="hero-stats">
-    <div class="stat-box">
-      <span class="stat-val">12,405</span>
-      <span class="stat-label">Players Online</span>
+    <!-- HERO -->
+    <div class="hero">
+      <div class="status-pill"><span class="dot"></span> Limit Reset: Today</div>
+
+      <h1>Start with <span style="color:var(--brand-red)">KES 50</span></h1>
+      <p class="subtitle">Secure your first deposit match. <br>Funds are instantly credited for gameplay.</p>
+
+      <div class="offer-card">
+        <div class="offer-row">
+          <div class="offer-item">
+            <h3>Deposit</h3>
+            <div class="val">50.00</div>
+          </div>
+          <div class="plus-icon">+</div>
+          <div class="offer-item">
+            <h3>Bonus</h3>
+            <div class="val">50.00</div>
+          </div>
+        </div>
+
+        <div class="total-row">Total Playable: KES 100.00</div>
+
+        <a href="https://boompesa.com/" class="cta-button">Claim 100% Match</a>
+      </div>
     </div>
-    <div class="stat-box">
-      <span class="stat-val">KES 4.2M</span>
-      <span class="stat-label">Paid Today</span>
+
+    <!-- FEATURES -->
+    <div class="features-grid">
+      <div class="feat-item">
+        <div class="check-circle">✓</div>
+        M-Pesa Supported
+      </div>
+      <div class="feat-item">
+        <div class="check-circle">✓</div>
+        Instant Cashout
+      </div>
+      <div class="feat-item">
+        <div class="check-circle">✓</div>
+        Licensed
+      </div>
+      <div class="feat-item">
+        <div class="check-circle">✓</div>
+        24/7 Support
+      </div>
     </div>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="logos">🔞 🛡️</div>
+      <p class="legal">
+        <strong>Responsible Gaming</strong><br>
+        Gaming is addictive and can be psychologically harmful. 18+ Only.<br>
+        License No: 0000412
+      </p>
+    </footer>
   </div>
 
-  <div class="info-section">
-    <div class="bonus-badge">🔥 100% WELCOME BONUS</div>
-    <h1>Win up to 100x</h1>
-    <p>The world's most popular crash game is here. Watch the plane fly, cash out before it crashes, and multiply your
-      money.</p>
-
-    <div class="reg-box">
-      <div class="reg-header">CREATE PLAYER ID</div>
-      <span class="offer-highlight">DEPOSIT 100 = GET 200 TO PLAY!</span>
-
-      <input type="tel" id="phone" placeholder="Enter Phone Number" autocomplete="tel">
-      <button id="submitPhoneBtn">GET BONUS & JOIN</button>
-      <div style="margin-top:15px; font-size:0.75rem; color:#666;">By joining, you agree to T&Cs. 18+ Only.</div>
-    </div>
-  </div>
-
-  <div class="winners-section">
-    <div class="section-title">🏆 Recent Big Wins</div>
-    <div class="winner-row">
-      <span>Kevin M.</span>
-      <span class="w-amt">+ KES 45,000 (54x)</span>
-    </div>
-    <div class="winner-row">
-      <span>Brian K.</span>
-      <span class="w-amt">+ KES 12,500 (12x)</span>
-    </div>
-    <div class="winner-row">
-      <span>Sarah W.</span>
-      <span class="w-amt">+ KES 8,200 (6.5x)</span>
-    </div>
-  </div>
-
+  <!-- TRACKING SCRIPT -->
   <script>
-    const API = "/api/track";
-    const LANDING_ID = "LP_LOBBY_REGISTER";
+    // --- ID GENERATOR ---
+    function uuidv4() {
+      return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+      );
+    }
 
-    document.getElementById("submitPhoneBtn").addEventListener("click", async () => {
-      const phone = document.getElementById("phone").value.trim();
-      const sessionId = crypto.randomUUID();
+    // --- SESSION CONFIG ---
+    const SESSION_KEY = 'aviator_tracker_session';
+    let sessionId = localStorage.getItem(SESSION_KEY);
+    if (!sessionId) {
+      sessionId = uuidv4();
+      localStorage.setItem(SESSION_KEY, sessionId);
+    }
 
-      if (!phone || phone.length < 9) {
-        alert("Please enter a valid phone number.");
-        return;
-      }
+    const LANDING_ID = "LP_AVIATOR_V3_CLEAN";
 
-      const btn = document.getElementById("submitPhoneBtn");
-      btn.innerText = "ACTIVATING BONUS...";
-      btn.disabled = true;
-
-      localStorage.setItem("tracker_session", sessionId);
-
+    // --- TRACKING HELPERS ---
+    const track = async (action, data = {}) => {
       try {
-        await Promise.all([
-          fetch(`${API}?action=lead`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ sessionId, landingId: LANDING_ID, phone })
-          }),
-          fetch(`${API}?action=visit`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              sessionId,
-              landingId: LANDING_ID,
-              source: "propeller",
-              country: Intl.DateTimeFormat().resolvedOptions().timeZone.split('/')[0]
-            })
-          }),
-          fetch(`${API}?action=click`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ sessionId, landingId: LANDING_ID })
+        await fetch('/api/track?action=' + action, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sessionId,
+            landingId: LANDING_ID,
+            ...data
           })
-        ]);
-
-        window.location.href = "bet.html";
-
-      } catch (error) {
-        console.error("Tracking error:", error);
-        window.location.href = "bet.html";
+        });
+      } catch (e) {
+        console.error("Tracking failed", e);
       }
+    };
+
+    // --- INIT: TRACK VISIT ---
+    track('visit', {
+      source: new URLSearchParams(window.location.search).get('source') || 'direct',
+      referrer: document.referrer
     });
 
-    // --- VARIANT APPLIER ---
-    // If URL has ?v=VARIANT_ID, fetch and apply text overrides
-    const urlParams = new URLSearchParams(window.location.search);
-    const vId = urlParams.get('v');
+    // --- HANDLER: CLICK & REDIRECT ---
+    document.querySelector('.cta-button').addEventListener('click', async (e) => {
+      e.preventDefault(); // Stop immediate redirect
+      const btn = e.currentTarget;
 
-    if (vId) {
-      fetch(`/api/variant/get?id=${vId}`)
-        .then(r => r.json())
-        .then(data => {
-          if (data.variant) {
-            const v = data.variant;
-            // Update Headline
-            if (v.headline) document.querySelector("h1").innerText = v.headline;
-            // Update Subheadline (p tag)
-            if (v.subheadline) document.querySelector(".info-section p").innerText = v.subheadline;
-            // Update CTA
-            if (v.cta_text) document.getElementById("submitPhoneBtn").innerText = v.cta_text;
-          }
-        })
-        .catch(e => console.error("Variant load failed", e));
-    }
+      // 1. Visual Feedback
+      btn.innerText = "Processing...";
+      btn.style.opacity = "0.8";
+
+      // 2. Track Click
+      await track('click');
+
+      // 3. Redirect
+      window.location.href = btn.href;
+    });
   </script>
 </body>
 
