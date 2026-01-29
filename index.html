@@ -78,30 +78,32 @@
     /* BACKGROUND PLANE WATERMARK */
     .plane-bg {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 100%;
-      max-width: 500px;
+      bottom: 20%;
+      left: 0;
+      width: 150px;
       height: auto;
-      opacity: 0.35;
-      /* Much more visible */
+      opacity: 0.5;
+      /* Very visible */
       z-index: 0;
       pointer-events: none;
-      filter: drop-shadow(0 0 30px rgba(227, 28, 45, 0.3));
+      fill: #CF0F1F;
+      /* Specific Aviator Red */
+      filter: drop-shadow(0 0 10px rgba(227, 28, 45, 0.4));
       /* Red glow */
-      animation: float 6s ease-in-out infinite;
+      animation: fly 6s linear infinite;
     }
 
-    @keyframes float {
-
-      0%,
-      100% {
-        transform: translate(-50%, -50%) translateY(0);
+    @keyframes fly {
+      0% {
+        transform: translate(-150px, 50px) rotate(-10deg) scale(0.8);
       }
 
-      50% {
-        transform: translate(-50%, -50%) translateY(-20px);
+      20% {
+        transform: translate(50px, 0px) rotate(0deg) scale(1);
+      }
+
+      100% {
+        transform: translate(120vw, -200px) rotate(-15deg) scale(1.3);
       }
     }
 
