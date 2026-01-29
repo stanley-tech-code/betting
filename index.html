@@ -11,12 +11,10 @@
     :root {
       /* DARK AVIATOR THEME */
       --primary-black: #0F172A;
-      --highlight-red: #FFD700;
-      /* Switched to GOLD per user request */
+      --highlight-gold: #FFD700;
       --action-green: #22C55E;
 
       --bg-page: #0F172A;
-      /* Dark Blue/Grey */
       --text-main: #FFFFFF;
       --card-bg: #1E293B;
     }
@@ -39,7 +37,6 @@
       flex-direction: column;
       background: var(--bg-page);
       position: relative;
-      /* For bg positioning */
       overflow: hidden;
       box-shadow: none;
     }
@@ -51,18 +48,16 @@
       justify-content: space-between;
       align-items: center;
       background: rgba(15, 23, 42, 0.95);
-      /* Semi-transparent */
       backdrop-filter: blur(10px);
       border-bottom: 1px solid #334155;
       z-index: 50;
-      /* Top Layer */
       position: relative;
     }
 
     .brand {
       font-weight: 800;
       font-size: 1.25rem;
-      color: var(--highlight-red);
+      color: var(--highlight-gold);
       letter-spacing: -0.5px;
       text-transform: uppercase;
     }
@@ -77,39 +72,25 @@
       background: #334155;
     }
 
-    /* BACKGROUND PLANE WATERMARK */
-    .plane-bg {
-      position: absolute;
-      bottom: -40px;
-      left: 0;
-      width: 150px;
-      height: auto;
-      opacity: 0.4;
-      /* Slightly reduced for better text legibility */
-      z-index: 0;
-      /* Lowest Layer */
-      pointer-events: none;
-      fill: #CF0F1F;
-      filter: drop-shadow(0 0 10px rgba(227, 28, 45, 0.4));
-      animation: fly 6s linear infinite;
+    /* HERO CARD WITH CUSTOM BACKGROUND */
+    .hero {
+      padding: 40px 24px;
+      text-align: center;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      z-index: 10;
+
+      /* New Background Image Logic */
+      background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.5)), url('bg-aviator.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
     }
 
-    @keyframes fly {
-      0% {
-        transform: translate(-150px, 0px) rotate(-10deg) scale(0.6);
-      }
-
-      20% {
-        /* Climb */
-        transform: translate(10vw, -10vh) rotate(-25deg) scale(0.8);
-      }
-
-      100% {
-        /* Exit */
-        transform: translate(120vw, -120vh) rotate(-45deg) scale(1.5);
-      }
-    }
-
+    /* Animation for Text Pulse */
     @keyframes pulseText {
       from {
         transform: scale(1);
@@ -120,34 +101,17 @@
       }
     }
 
-    /* HERO CARD */
-    .hero {
-      padding: 40px 24px;
-      text-align: center;
-      background: transparent;
-      color: var(--text-main);
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      position: relative;
-      z-index: 10;
-      /* Strictly above Plane */
-    }
-
     .hero-content {
       position: relative;
       z-index: 20;
-      /* Ensure content is top-most */
     }
 
     .status-pill {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: var(--highlight-red);
+      background: var(--highlight-gold);
       color: #0F172A;
-      /* Dark text on Gold */
       padding: 6px 14px;
       border-radius: 100px;
       font-size: 0.75rem;
@@ -161,22 +125,22 @@
     .dot {
       width: 8px;
       height: 8px;
-      background: white;
+      background: #0F172A;
       border-radius: 50%;
       animation: pulse 2s infinite;
     }
 
     @keyframes pulse {
       0% {
-        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+        box-shadow: 0 0 0 0 rgba(15, 23, 42, 0.4);
       }
 
       70% {
-        box-shadow: 0 0 0 6px rgba(255, 255, 255, 0);
+        box-shadow: 0 0 0 6px rgba(15, 23, 42, 0);
       }
 
       100% {
-        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+        box-shadow: 0 0 0 0 rgba(15, 23, 42, 0);
       }
     }
 
@@ -188,32 +152,35 @@
       line-height: 1;
       margin-bottom: 16px;
       text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
-      /* Darker shadow for separation */
     }
 
     p.subtitle {
       font-size: 1.1rem;
       font-weight: 600;
-      color: #94A3B8;
+      color: #CBD5E1;
+      /* Lighter for readability on image */
       margin-bottom: 32px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
     }
 
     /* OFFER CARD */
     .offer-card {
-      background: rgba(30, 41, 59, 0.8);
-      border: 1px solid #334155;
-      backdrop-filter: blur(5px);
+      background: rgba(15, 23, 42, 0.85);
+      /* Slightly darker/more opaque */
+      border: 1px solid rgba(255, 215, 0, 0.2);
+      /* Gold border hint */
+      backdrop-filter: blur(8px);
       color: white;
       border-radius: 12px;
       padding: 24px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
       margin-bottom: 20px;
     }
 
     .offer-val {
       font-size: 3.5rem;
       font-weight: 800;
-      color: var(--highlight-red);
+      color: var(--highlight-gold);
       line-height: 1;
       margin: 10px 0;
       text-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
@@ -221,7 +188,7 @@
 
     .reg-bonus-row {
       margin: 20px 0;
-      border-top: 1px solid #334155;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
       padding-top: 15px;
       display: flex;
       flex-direction: column;
@@ -230,7 +197,7 @@
     }
 
     .reg-bonus-highlight {
-      color: var(--highlight-red);
+      color: var(--highlight-gold);
       font-weight: 900;
       font-size: 1.8rem;
       text-transform: uppercase;
@@ -288,12 +255,6 @@
 <body>
 
   <div class="container">
-    <!-- SVG PLANE -->
-    <svg class="plane-bg" viewBox="0 0 576 512" xmlns="http://www.w3.org/2000/svg">
-      <path
-        d="M482.3 192c34.2 0 93.7 29 93.7 64c0 36-59.5 64-93.7 64l-116.6 0L265.2 495.9c-5.7 10-16.3 16.1-27.8 16.1l-56.2 0c-10.6 0-18.3-10.2-15.4-20.4l49-171.6L112 320 48.8 410.5C44.6 416.5 37.7 420 30.5 420L6.4 420c-8.9 0-15.5-8.4-13.3-17L32 256 32 256 -6.9 109c-2.2-8.6 4.4-17 13.3-17l24.1 0c7.2 0 14.1 3.5 18.2 9.5L112 192l102.8 0-49-171.6C163 10.2 170.6 0 181.2 0l56.2 0c11.5 0 22.1 6.2 27.8 16.1L365.7 192l116.6 0z" />
-    </svg>
-
     <!-- NAV -->
     <nav class="navbar">
       <div class="brand">AVIATOR</div>
@@ -305,7 +266,9 @@
       <div class="hero-content">
         <div class="status-pill"><span class="dot"></span> LIVE NOW</div>
 
-        <h1>WIN UP TO<br><span style="font-size:1.2em">5 MILLION</span><br>IN SECONDS</h1>
+        <h1>WIN UP TO<br><span
+            style="font-size:1.2em; color: var(--highlight-gold); text-shadow: 0 0 15px rgba(255,215,0,0.5);">5
+            MILLION</span><br>IN SECONDS</h1>
 
         <p class="subtitle">The world's #1 Crash Game.</p>
 
