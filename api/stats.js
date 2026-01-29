@@ -91,6 +91,40 @@ module.exports = async function handler(req, res) {
     } catch (e) { return res.status(500).json({ error: e.message }); }
   }
 
+  // --- PERFORMANCE (Peak Hours & Best Days) ---
+  if (action === 'performance') {
+    try {
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      const { data: visits } = await supabase
+        .from('visits')
+        .select('created_at')
+        .gte('created_at', thirtyDaysAgo);
+
+      const hourCounts = new Array(24).fill(0);
+      const dayCounts = new Array(7).fill(0); // 0=Sun, 6=Sat
+
+      (visits || []).forEach(v => {
+        const d = new Date(v.created_at);
+        hourCounts[d.getHours()]++;
+        dayCounts[d.getDay()]++;
+      });
+
+      // Find Max for Highlights
+      const maxHourVal = Math.max(...hourCounts);
+      const peakHour = hourCounts.indexOf(maxHourVal);
+
+      const maxDayVal = Math.max(...dayCounts);
+      const bestDay = dayCounts.indexOf(maxDayVal);
+
+      return res.status(200).json({
+        hourly: hourCounts,
+        daily: dayCounts,
+        peakHour,
+        bestDay
+      });
+    } catch (e) { return res.status(500).json({ error: e.message }); }
+  }
+
   // --- RECENT LEADS (JSON) ---
   if (action === 'get-recent-leads') {
     try {

@@ -305,9 +305,15 @@
         <div style="height:300px;"><canvas id="mainChart"></canvas></div>
       </div>
       <div class="card">
-        <h2 style="margin-bottom:24px; font-size:1rem;">Audience Distribution</h2>
-        <div style="height:200px; margin-bottom:20px;"><canvas id="pieChart"></canvas></div>
-        <div class="metric-label" style="text-align:center;">Top Region: <span style="color:#fff">Nairobi</span></div>
+        <h2 style="margin-bottom:16px; font-size:1rem;">Performance Patterns</h2>
+        <div id="peakLabel" style="font-size:0.85rem; color:var(--success); margin-bottom:16px; font-weight:600;">
+          Loading insights...</div>
+
+        <div style="margin-bottom:12px; font-size:0.75rem; color:var(--text-secondary);">BY HOUR (24h)</div>
+        <div style="height:120px; margin-bottom:20px;"><canvas id="hourChart"></canvas></div>
+
+        <div style="margin-bottom:12px; font-size:0.75rem; color:var(--text-secondary);">BY DAY (Weekly)</div>
+        <div style="height:120px;"><canvas id="dayChart"></canvas></div>
       </div>
     </div>
 
@@ -502,13 +508,43 @@
         options: { plugins: { legend: { display: false } }, maintainAspectRatio: false }
       });
 
-      new Chart(document.getElementById('pieChart'), {
-        type: 'doughnut',
+      // --- PERFORMANCE CHARTS ---
+      const pRes = await fetch('/api/stats?action=performance');
+      const pData = await pRes.json();
+
+      // Helper to format AM/PM
+      const hrs = Array.from({ length: 24 }, (_, i) => i === 0 ? '12AM' : (i < 12 ? i + 'AM' : (i === 12 ? '12PM' : (i - 12) + 'PM')));
+      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+      // Highlights
+      document.getElementById('peakLabel').innerHTML = `🔥 Best Time: <span style="color:#fff">${hrs[pData.peakHour]}</span> on <span style="color:#fff">${days[pData.bestDay]}</span>`;
+
+      // Hour Chart
+      new Chart(document.getElementById('hourChart'), {
+        type: 'bar',
         data: {
-          labels: ['Safe', 'Testing', 'Paused'],
-          datasets: [{ data: [60, 20, 10], backgroundColor: ['#10b981', '#f59e0b', '#ef4444'], borderWidth: 0 }]
+          labels: hrs,
+          datasets: [{
+            data: pData.hourly,
+            backgroundColor: pData.hourly.map((v, i) => i === pData.peakHour ? '#10b981' : '#3f3f46'),
+            borderRadius: 4
+          }]
         },
-        options: { cutout: '75%', plugins: { legend: { display: false } }, maintainAspectRatio: false }
+        options: { plugins: { legend: { display: false } }, maintainAspectRatio: false, scales: { x: { display: false }, y: { display: false } } }
+      });
+
+      // Day Chart
+      new Chart(document.getElementById('dayChart'), {
+        type: 'bar',
+        data: {
+          labels: days,
+          datasets: [{
+            data: pData.daily,
+            backgroundColor: pData.daily.map((v, i) => i === pData.bestDay ? '#10b981' : '#a855f7'),
+            borderRadius: 4
+          }]
+        },
+        options: { plugins: { legend: { display: false } }, maintainAspectRatio: false, scales: { y: { display: false }, x: { grid: { display: false } } } }
       });
     }
 
