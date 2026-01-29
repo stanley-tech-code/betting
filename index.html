@@ -81,16 +81,16 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 140%;
-      /* Massive Watermark */
-      max-width: 600px;
+      width: 100%;
+      max-width: 500px;
       height: auto;
-      opacity: 0.15;
-      /* Subtle Watermark */
+      opacity: 0.35;
+      /* Much more visible */
       z-index: 0;
       pointer-events: none;
-      /* Slow float */
-      animation: float 8s ease-in-out infinite;
+      filter: drop-shadow(0 0 30px rgba(227, 28, 45, 0.3));
+      /* Red glow */
+      animation: float 6s ease-in-out infinite;
     }
 
     @keyframes float {
@@ -278,8 +278,7 @@
 <body>
 
   <div class="container">
-    <img src="https://creazilla-store.fra1.digitaloceanspaces.com/cliparts/6007/airplane-clipart-xl.png"
-      alt="Aviator Plane" class="plane-bg">
+    <img src="https://i.postimg.cc/1X37WcYF/AVION.png" alt="Aviator Plane" class="plane-bg">
 
     <!-- NAV -->
     <nav class="navbar">
