@@ -9,19 +9,22 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary-blue: #0A192F;
-      --brand-red: #E31C2D;
-      --text-dark: #1F2937;
-      --text-light: #6B7280;
-      --bg-page: #FFFBEB;
-      --white: #FFFFFF;
-      --success: #10B981;
+      /* BETIKA INSPIRED PALETTE (Yellow/Black/Green) */
+      --primary-black: #1A1A1A;
+      --betika-yellow: #FFD200;
+      --action-green: #40B345;
+
+      --bg-page: #FFD200;
+      /* Vibrant Warm Yellow */
+      --card-bg: #FFFFFF;
+      --text-main: #1A1A1A;
     }
 
     body {
       font-family: 'Inter', sans-serif;
-      background-color: var(--bg-page);
-      color: var(--text-dark);
+      background-color: var(--primary-black);
+      /* Dark outer bg for contrast */
+      color: var(--text-main);
       margin: 0;
       padding: 0;
       line-height: 1.5;
@@ -35,8 +38,8 @@
       display: flex;
       flex-direction: column;
       background: var(--bg-page);
-      /* Match page bg */
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+      /* Yellow Main Background */
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
     }
 
     /* HEADER */
@@ -45,174 +48,147 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid #FEF3C7;
-      /* Warm border */
-      background: var(--bg-page);
-      /* Match page bg */
+      background: #1A1A1A;
+      /* Black Header */
+      color: white;
+    }
+
+    .brand {
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: var(--betika-yellow);
+      letter-spacing: -0.5px;
+      text-transform: uppercase;
+    }
+
+    .auth-btn {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #1A1A1A;
+      text-decoration: none;
+      padding: 6px 16px;
+      border-radius: 4px;
+      background: var(--betika-yellow);
     }
 
     /* ... */
 
     /* HERO CARD */
     .hero {
-      padding: 32px 24px;
+      padding: 40px 24px;
       text-align: center;
-      background: radial-gradient(circle at top, #FDE68A 0%, #FFFBEB 100%);
-      /* Warm Amber Gradient */
+      background: var(--bg-page);
+      /* Yellow */
+      color: var(--text-main);
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
     .status-pill {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: #ECFDF5;
-      color: #047857;
+      background: #1A1A1A;
+      color: #FFD200;
       padding: 6px 14px;
       border-radius: 100px;
       font-size: 0.75rem;
       font-weight: 700;
       text-transform: uppercase;
       margin-bottom: 24px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+      align-self: center;
     }
 
     .dot {
       width: 8px;
       height: 8px;
-      background: #10B981;
+      background: #FFD200;
+      /* Changed to match new theme */
       border-radius: 50%;
       animation: pulse 2s infinite;
     }
 
     @keyframes pulse {
       0% {
-        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+        box-shadow: 0 0 0 0 rgba(255, 210, 0, 0.4);
+        /* Changed to match new theme */
       }
 
       70% {
-        box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+        box-shadow: 0 0 0 6px rgba(255, 210, 0, 0);
+        /* Changed to match new theme */
       }
 
       100% {
-        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+        box-shadow: 0 0 0 0 rgba(255, 210, 0, 0);
+        /* Changed to match new theme */
       }
     }
 
     h1 {
-      font-size: 2rem;
-      font-weight: 800;
-      color: var(--primary-blue);
-      margin: 0 0 16px 0;
-      line-height: 1.1;
-      letter-spacing: -1px;
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: #1A1A1A;
+      text-transform: uppercase;
+      line-height: 1;
+      margin-bottom: 16px;
     }
 
     p.subtitle {
-      font-size: 1rem;
-      color: var(--text-light);
-      margin-bottom: 32px;
-      max-width: 90%;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    /* OFFER CARD */
-    .offer-card {
-      border: 1px solid #E5E7EB;
-      border-radius: 16px;
-      padding: 24px;
-      background: var(--white);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-      /* Soft sophisticated shadow */
-      margin-bottom: 40px;
-    }
-
-    .offer-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid #F3F4F6;
-    }
-
-    .offer-item h3 {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      color: var(--text-light);
-      margin: 0 0 4px 0;
-      letter-spacing: 0.5px;
-    }
-
-    .offer-item .val {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--primary-blue);
-    }
-
-    .plus-icon {
-      font-size: 1.5rem;
-      color: #D1D5DB;
-      font-weight: 300;
-    }
-
-    .total-row {
-      text-align: center;
-      color: var(--success);
+      font-size: 1.1rem;
       font-weight: 600;
-      font-size: 1.125rem;
-      margin-bottom: 24px;
+      color: #333;
+      margin-bottom: 32px;
+    }
+
+    /* OFFER CARD - Minimalist Black/Yellow */
+    .offer-card {
+      background: #1A1A1A;
+      color: white;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      margin-bottom: 20px;
+    }
+
+    .offer-val {
+      font-size: 3.5rem;
+      font-weight: 800;
+      color: var(--betika-yellow);
+      line-height: 1;
+      margin: 10px 0;
     }
 
     /* CTA BUTTON */
     .cta-button {
       display: block;
       width: 100%;
-      background: var(--brand-red);
-      color: var(--white);
-      font-size: 1.125rem;
-      font-weight: 600;
+      background: var(--action-green);
+      color: white;
+      font-size: 1.25rem;
+      font-weight: 800;
       text-align: center;
       padding: 18px;
-      border-radius: 12px;
+      border-radius: 8px;
+      /* Sharper corners like betting sites */
       text-decoration: none;
-      box-shadow: 0 4px 12px rgba(227, 28, 45, 0.25);
-      transition: all 0.2s ease;
+      box-shadow: 0 4px 0 #2E8532;
+      /* Button depth */
+      text-transform: uppercase;
+      margin-top: 10px;
     }
 
     .cta-button:active {
-      transform: translateY(1px);
-      box-shadow: 0 2px 5px rgba(227, 28, 45, 0.2);
+      transform: translateY(4px);
+      box-shadow: none;
     }
 
-    /* FEATURES / TRUST */
+    /* Footer Clean Up */
     .features-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      padding: 0 24px 40px;
-    }
-
-    .feat-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 0.875rem;
-      color: var(--text-dark);
-      font-weight: 500;
-    }
-
-    .check-circle {
-      width: 20px;
-      height: 20px;
-      background: #ECFDF5;
-      color: #10B981;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.75rem;
-      flex-shrink: 0;
+      display: none;
+      /* Simplify for High Impact */
     }
 
     /* FOOTER */
@@ -244,48 +220,34 @@
   <div class="container">
     <!-- NAV -->
     <nav class="navbar">
-      <div class="brand">AVIATOR<span>KE</span></div>
-      <a href="https://boompesa.com/" class="auth-btn">Log In</a>
+      <div class="brand">AVIATOR</div>
+      <a href="https://boompesa.com/" class="auth-btn">LOGIN</a>
     </nav>
 
     <!-- HERO -->
     <div class="hero">
-      <div class="status-pill"><span class="dot"></span> Limit Reset: Today</div>
+      <div class="status-pill"><span class="dot"></span> LIVE NOW</div>
 
-      <h1>Create an account and get a <span style="color:var(--brand-red)">FREE 50</span></h1>
-      <p class="subtitle">Join the winners circle today. <br>Your free credits are waiting for you.</p>
+      <h1>WIN UP TO<br><span style="font-size:1.2em">5 MILLION</span><br>IN SECONDS</h1>
+
+      <p class="subtitle">The world's #1 Crash Game.</p>
 
       <div class="offer-card">
-        <div class="offer-row" style="justify-content: center; border-bottom: none; padding-bottom: 0;">
-          <div class="offer-item" style="text-align: center;">
-            <h3>Registration Bonus</h3>
-            <div class="val" style="font-size: 2.5rem;">KES 50.00</div>
-          </div>
+        <div style="font-size: 0.9rem; text-transform:uppercase; letter-spacing:1px; opacity:0.8;">Possible Win</div>
+        <div class="offer-val">KES 5M+</div>
+        <div style="font-size: 0.9rem; color:#ccc;">Instant Withdrawals</div>
+
+        <div
+          style="margin: 20px 0; border-top: 1px solid #333; padding-top:15px; display:flex; justify-content:space-between; align-items:center;">
+          <span>Register Now:</span>
+          <span style="color:var(--betika-yellow); font-weight:700;">GET FREE 50</span>
         </div>
 
-        <div class="total-row" style="margin-top: 10px;">Instantly Credited</div>
+        <a href="https://boompesa.com/" class="cta-button">PLAY NOW</a>
+      </div>
 
-        <a href="https://boompesa.com/" class="cta-button">Claim Free 50</a>
-      </div>
-    </div>
-
-    <!-- FEATURES -->
-    <div class="features-grid">
-      <div class="feat-item">
-        <div class="check-circle">✓</div>
-        M-Pesa Supported
-      </div>
-      <div class="feat-item">
-        <div class="check-circle">✓</div>
-        Instant Cashout
-      </div>
-      <div class="feat-item">
-        <div class="check-circle">✓</div>
-        Licensed
-      </div>
-      <div class="feat-item">
-        <div class="check-circle">✓</div>
-        24/7 Support
+      <div style="margin-top:20px; font-size:0.8rem; font-weight:600;">
+        By joining, you confirm you are 18+
       </div>
     </div>
 
