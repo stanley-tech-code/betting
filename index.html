@@ -83,11 +83,22 @@
       position: relative;
       z-index: 10;
 
-      /* New Background Image Logic */
-      background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.5)), url('bg-aviator.png');
+      /* Simplified Background - Using Explicit Path */
+      background: url('./bg-aviator.png') no-repeat center center;
       background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
+    }
+
+    /* Dark Overlay */
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.6);
+      /* Darkens the image so text pops */
+      z-index: -1;
     }
 
     /* Animation for Text Pulse */
