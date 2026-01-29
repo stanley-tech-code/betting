@@ -53,7 +53,8 @@
       /* Semi-transparent */
       backdrop-filter: blur(10px);
       border-bottom: 1px solid #334155;
-      z-index: 10;
+      z-index: 50;
+      /* Top Layer */
       position: relative;
     }
 
@@ -82,14 +83,13 @@
       left: 0;
       width: 150px;
       height: auto;
-      opacity: 0.5;
-      /* Very visible */
+      opacity: 0.4;
+      /* Slightly reduced for better text legibility */
       z-index: 0;
+      /* Lowest Layer */
       pointer-events: none;
       fill: #CF0F1F;
-      /* Specific Aviator Red */
       filter: drop-shadow(0 0 10px rgba(227, 28, 45, 0.4));
-      /* Red glow */
       animation: fly 6s linear infinite;
     }
 
@@ -99,10 +99,12 @@
       }
 
       20% {
+        /* Climb */
         transform: translate(10vw, -10vh) rotate(-25deg) scale(0.8);
       }
 
       100% {
+        /* Exit */
         transform: translate(120vw, -120vh) rotate(-45deg) scale(1.5);
       }
     }
@@ -128,12 +130,14 @@
       flex-direction: column;
       justify-content: center;
       position: relative;
-      z-index: 1;
+      z-index: 10;
+      /* Strictly above Plane */
     }
 
     .hero-content {
       position: relative;
-      z-index: 1;
+      z-index: 20;
+      /* Ensure content is top-most */
     }
 
     .status-pill {
@@ -181,7 +185,8 @@
       text-transform: uppercase;
       line-height: 1;
       margin-bottom: 16px;
-      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+      /* Darker shadow for separation */
     }
 
     p.subtitle {
@@ -260,6 +265,7 @@
       padding: 32px 24px;
       text-align: center;
       border-top: 1px solid #334155;
+      z-index: 10;
     }
 
     .logos {
