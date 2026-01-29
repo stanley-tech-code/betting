@@ -9,21 +9,20 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      /* BETIKA INSPIRED PALETTE (Yellow/Black/Green) */
-      --primary-black: #1A1A1A;
-      --betika-yellow: #FFD200;
-      --action-green: #40B345;
+      /* DARK AVIATOR THEME */
+      --primary-black: #0F172A;
+      --highlight-red: #E31C2D;
+      --action-green: #22C55E;
 
-      --bg-page: #FFD200;
-      /* Vibrant Warm Yellow */
-      --card-bg: #FFFFFF;
-      --text-main: #1A1A1A;
+      --bg-page: #0F172A;
+      /* Dark Blue/Grey */
+      --text-main: #FFFFFF;
+      --card-bg: #1E293B;
     }
 
     body {
       font-family: 'Inter', sans-serif;
-      background-color: var(--primary-black);
-      /* Dark outer bg for contrast */
+      background-color: var(--bg-page);
       color: var(--text-main);
       margin: 0;
       padding: 0;
@@ -38,8 +37,10 @@
       display: flex;
       flex-direction: column;
       background: var(--bg-page);
-      /* Yellow Main Background */
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+      position: relative;
+      /* For bg positioning */
+      overflow: hidden;
+      box-shadow: none;
     }
 
     /* HEADER */
@@ -48,39 +49,59 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: #1A1A1A;
-      /* Black Header */
-      color: white;
+      background: rgba(15, 23, 42, 0.95);
+      /* Semi-transparent */
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #334155;
+      z-index: 10;
+      position: relative;
     }
 
     .brand {
       font-weight: 800;
       font-size: 1.25rem;
-      color: var(--betika-yellow);
+      color: var(--highlight-red);
       letter-spacing: -0.5px;
       text-transform: uppercase;
     }
 
     .auth-btn {
-      font-size: 0.875rem;
-      font-weight: 700;
-      color: #1A1A1A;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: white;
       text-decoration: none;
-      padding: 6px 16px;
+      padding: 6px 12px;
       border-radius: 4px;
-      background: var(--betika-yellow);
+      background: #334155;
     }
 
-    /* ... */
+    /* BACKGROUND PLANE WATERMARK */
+    .plane-bg {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 140%;
+      /* Massive Watermark */
+      max-width: 600px;
+      height: auto;
+      opacity: 0.15;
+      /* Subtle Watermark */
+      z-index: 0;
+      pointer-events: none;
+      /* Slow float */
+      animation: float 8s ease-in-out infinite;
+    }
 
-    /* ANIMATION */
-    @keyframes fly {
-      0% {
-        transform: translate(-300px, 100px) scale(0.6) rotate(-10deg);
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translate(-50%, -50%) translateY(0);
       }
 
-      100% {
-        transform: translate(120vw, -400px) scale(1.4) rotate(0deg);
+      50% {
+        transform: translate(-50%, -50%) translateY(-20px);
       }
     }
 
@@ -98,31 +119,14 @@
     .hero {
       padding: 40px 24px;
       text-align: center;
-      background: var(--bg-page);
-      /* Yellow */
+      background: transparent;
       color: var(--text-main);
       flex-grow: 1;
       display: flex;
       flex-direction: column;
       justify-content: center;
       position: relative;
-      overflow: hidden;
-    }
-
-    .plane-bg {
-      position: absolute;
-      bottom: -100px;
-      /* Start lower */
-      left: 0;
-      width: 350px;
-      /* Bigger */
-      height: auto;
-      opacity: 0.9 !important;
-      /* Force visibility */
-      z-index: 0;
-      animation: fly 5s infinite linear;
-      pointer-events: none;
-      filter: drop-shadow(0 20px 20px rgba(0, 0, 0, 0.4));
+      z-index: 1;
     }
 
     .hero-content {
@@ -130,31 +134,12 @@
       z-index: 1;
     }
 
-    .reg-bonus-row {
-      margin: 20px 0;
-      border-top: 1px solid #333;
-      padding-top: 15px;
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      align-items: center;
-    }
-
-    .reg-bonus-highlight {
-      color: var(--betika-yellow);
-      font-weight: 900;
-      font-size: 1.8rem;
-      text-transform: uppercase;
-      text-shadow: 0 0 10px rgba(255, 210, 0, 0.5);
-      animation: pulseText 1.5s infinite alternate;
-    }
-
     .status-pill {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: #1A1A1A;
-      color: #FFD200;
+      background: var(--highlight-red);
+      color: white;
       padding: 6px 14px;
       border-radius: 100px;
       font-size: 0.75rem;
@@ -162,53 +147,53 @@
       text-transform: uppercase;
       margin-bottom: 24px;
       align-self: center;
+      box-shadow: 0 4px 15px rgba(227, 28, 45, 0.3);
     }
 
     .dot {
       width: 8px;
       height: 8px;
-      background: #FFD200;
-      /* Changed to match new theme */
+      background: white;
       border-radius: 50%;
       animation: pulse 2s infinite;
     }
 
     @keyframes pulse {
       0% {
-        box-shadow: 0 0 0 0 rgba(255, 210, 0, 0.4);
-        /* Changed to match new theme */
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
       }
 
       70% {
-        box-shadow: 0 0 0 6px rgba(255, 210, 0, 0);
-        /* Changed to match new theme */
+        box-shadow: 0 0 0 6px rgba(255, 255, 255, 0);
       }
 
       100% {
-        box-shadow: 0 0 0 0 rgba(255, 210, 0, 0);
-        /* Changed to match new theme */
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
       }
     }
 
     h1 {
       font-size: 2.5rem;
       font-weight: 900;
-      color: #1A1A1A;
+      color: white;
       text-transform: uppercase;
       line-height: 1;
       margin-bottom: 16px;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
     }
 
     p.subtitle {
       font-size: 1.1rem;
       font-weight: 600;
-      color: #333;
+      color: #94A3B8;
       margin-bottom: 32px;
     }
 
-    /* OFFER CARD - Minimalist Black/Yellow */
+    /* OFFER CARD */
     .offer-card {
-      background: #1A1A1A;
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid #334155;
+      backdrop-filter: blur(5px);
       color: white;
       border-radius: 12px;
       padding: 24px;
@@ -219,9 +204,29 @@
     .offer-val {
       font-size: 3.5rem;
       font-weight: 800;
-      color: var(--betika-yellow);
+      color: var(--highlight-red);
       line-height: 1;
       margin: 10px 0;
+      text-shadow: 0 0 20px rgba(227, 28, 45, 0.4);
+    }
+
+    .reg-bonus-row {
+      margin: 20px 0;
+      border-top: 1px solid #334155;
+      padding-top: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      align-items: center;
+    }
+
+    .reg-bonus-highlight {
+      color: var(--highlight-red);
+      font-weight: 900;
+      font-size: 1.8rem;
+      text-transform: uppercase;
+      text-shadow: 0 0 10px rgba(227, 28, 45, 0.5);
+      animation: pulseText 1.5s infinite alternate;
     }
 
     /* CTA BUTTON */
@@ -235,10 +240,8 @@
       text-align: center;
       padding: 18px;
       border-radius: 8px;
-      /* Sharper corners like betting sites */
       text-decoration: none;
-      box-shadow: 0 4px 0 #2E8532;
-      /* Button depth */
+      box-shadow: 0 4px 0 #15803d;
       text-transform: uppercase;
       margin-top: 10px;
     }
@@ -248,19 +251,13 @@
       box-shadow: none;
     }
 
-    /* Footer Clean Up */
-    .features-grid {
-      display: none;
-      /* Simplify for High Impact */
-    }
-
     /* FOOTER */
     footer {
       margin-top: auto;
-      background: #F9FAFB;
+      background: rgba(15, 23, 42, 0.95);
       padding: 32px 24px;
       text-align: center;
-      border-top: 1px solid #E5E7EB;
+      border-top: 1px solid #334155;
     }
 
     .logos {
@@ -272,7 +269,7 @@
 
     .legal {
       font-size: 0.75rem;
-      color: #9CA3AF;
+      color: #64748B;
       line-height: 1.4;
     }
   </style>
@@ -292,8 +289,6 @@
 
     <!-- HERO -->
     <div class="hero">
-      <!-- Image removed from here -->
-
       <div class="hero-content">
         <div class="status-pill"><span class="dot"></span> LIVE NOW</div>
 
