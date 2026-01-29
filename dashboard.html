@@ -460,17 +460,29 @@
 
     // --- STANDARD DASHBOARD LOGIC ---
     async function loadStats() {
-      const res = await fetch('/api/stats?action=dashboard-summary');
-      const data = await res.json();
+      try {
+        const res = await fetch('/api/stats?action=dashboard-summary');
+        const data = await res.json();
 
-      let tv = 0, tl = 0, tc = 0;
-      if (data.stats) {
-        Object.values(data.stats).forEach(s => { tv += s.visits; tl += s.leads; tc += s.clicks; });
-      }
-      document.getElementById('m-visits').innerText = fmt(tv);
-      // Leads removed
-      document.getElementById('m-cr').innerText = tv > 0 ? ((tl / tv) * 100).toFixed(1) + '%' : '0%';
-      document.getElementById('m-clicks').innerText = fmt(tc);
+        if (data.today) {
+          // Visits
+          document.getElementById('m-visits').innerText = fmt(data.today.visits);
+          const vPill = document.querySelector('#m-visits').nextElementSibling;
+          vPill.innerText = data.growth.visits + " vs yest";
+          vPill.style.color = data.growth.visits.includes('-') ? 'var(--danger)' : 'var(--success)';
+          vPill.style.background = data.growth.visits.includes('-') ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)';
+
+          // Clicks
+          document.getElementById('m-clicks').innerText = fmt(data.today.clicks);
+          const cPill = document.querySelector('#m-clicks').nextElementSibling;
+          cPill.innerText = data.growth.clicks + " vs yest";
+          cPill.style.color = data.growth.clicks.includes('-') ? 'var(--danger)' : 'var(--success)';
+          cPill.style.background = data.growth.clicks.includes('-') ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)';
+
+          // CTR
+          document.getElementById('m-cr').innerText = data.today.ctr;
+        }
+      } catch (e) { console.error("Stats Load Error", e); }
     }
 
     async function loadCharts() {
