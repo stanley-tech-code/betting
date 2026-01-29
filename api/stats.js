@@ -35,11 +35,13 @@ module.exports = async function handler(req, res) {
       });
       clicks.forEach(c => {
         const key = c.landing_id || 'Unknown';
-        if (stats[key]) stats[key].clicks++;
+        if (!stats[key]) stats[key] = { visits: 0, clicks: 0, leads: 0, ctr: 0 };
+        stats[key].clicks++;
       });
       leads.forEach(l => {
         const key = l.landing_id || 'Unknown';
-        if (stats[key]) stats[key].leads++;
+        if (!stats[key]) stats[key] = { visits: 0, clicks: 0, leads: 0, ctr: 0 };
+        stats[key].leads++;
       });
 
       // Calc CTR

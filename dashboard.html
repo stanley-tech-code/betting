@@ -418,6 +418,9 @@
       // loadLeads(); // Removed
       // checkAutoDownload(); // Removed
       calc(); // Run Calc once
+
+      // Real-time updates
+      setInterval(loadStats, 2000); // Update stats every 2s
       setInterval(pollWatchdog, 10000);
       pollWatchdog();
     }
