@@ -1,7 +1,7 @@
-const { createClient } = require('@supabase/supabase-js');
-const crypto = require('crypto');
-const fs = require('fs');
-const path = require('path');
+import { createClient } from '@supabase/supabase-js';
+import crypto from 'crypto';
+import fs from 'fs';
+import path from 'path';
 
 let supabase = null;
 if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY) {
@@ -31,7 +31,7 @@ function hashIP(ip) {
   return crypto.createHash('sha256').update(ip).digest('hex');
 }
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   // if (!supabase) return res.status(500).json({ error: "Missing Env Vars" }); // REMOVED BLOCKER
   // Parsing the 'action' from query params, which we will route in vercel.json
   // e.g. /api/track/visit -> /api/track.js?action=visit
