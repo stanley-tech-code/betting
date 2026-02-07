@@ -153,5 +153,23 @@ module.exports = async function handler(req, res) {
     return res.status(200).json({ zones: [] });
   }
 
+  // --- [NEW] SYSTEM STATUS ---
+  if (action === 'get-status') {
+    if (supabase) {
+      const { data } = await supabase.from('system_config').select('value').eq('key', 'status').single();
+      return res.status(200).json({ status: data ? data.value : 'active' });
+    }
+    return res.status(200).json({ status: 'active' }); // Default to active if local
+  }
+
+  if (action === 'set-status') {
+    const { status } = req.body || req.query; // Allow query for simplicity
+    if (supabase) {
+      await supabase.from('system_config').upsert({ key: 'status', value: status, updated_at: new Date() });
+      return res.status(200).json({ success: true, status });
+    }
+    return res.status(200).json({ success: true, status: 'local-mock' });
+  }
+
   return res.status(200).json({});
 }

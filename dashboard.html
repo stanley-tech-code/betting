@@ -276,7 +276,18 @@
     <!-- HEADER -->
     <div class="brand-header">
       <div class="brand-logo">A.K.Maina System</div>
-      <div style="font-size:0.9rem; color:var(--text-secondary);">Manual Propeller Mode ●</div>
+      <div style="display:flex; align-items:center; gap:15px;">
+        <div id="sys-indicator"
+          style="font-size:0.8rem; color:var(--success); display:flex; align-items:center; gap:6px;">
+          <div style="width:8px; height:8px; background:currentColor; border-radius:50%; animation:pulse 2s infinite;">
+          </div>
+          SYSTEM ONLINE
+        </div>
+        <button id="btn-pause" onclick="toggleSystem()"
+          style="padding:8px 16px; border-radius:6px; border:1px solid var(--danger); background:rgba(239,68,68,0.1); color:var(--danger); cursor:pointer; font-weight:600;">
+          ⏸ PAUSE BUYING
+        </button>
+      </div>
     </div>
 
     <!-- ROW 1: METRICS -->
@@ -769,6 +780,43 @@
     init();
     setInterval(loadReports, 60000);
     setInterval(loadBudget, 10000); // Check gates often
+    setInterval(checkSystemStatus, 5000); // Check remote status
+    checkSystemStatus();
+
+    async function checkSystemStatus() {
+      try {
+        const res = await fetch('/api/stats?action=get-status');
+        const data = await res.json();
+        const ind = document.getElementById('sys-indicator');
+        const btn = document.getElementById('btn-pause');
+
+        if (data.status === 'paused') {
+          ind.style.color = 'var(--text-secondary)';
+          ind.innerHTML = '<div style="width:8px; height:8px; background:currentColor; border-radius:50%;"></div> SYSTEM PAUSED';
+          btn.innerHTML = '▶ RESUME BUYING';
+          btn.style.borderColor = 'var(--success)';
+          btn.style.color = 'var(--success)';
+          btn.style.background = 'rgba(16, 185, 129, 0.1)';
+        } else {
+          ind.style.color = 'var(--success)';
+          ind.innerHTML = '<div style="width:8px; height:8px; background:currentColor; border-radius:50%; animation:pulse 2s infinite;"></div> SYSTEM ONLINE';
+          btn.innerHTML = '⏸ PAUSE BUYING';
+          btn.style.borderColor = 'var(--danger)';
+          btn.style.color = 'var(--danger)';
+          btn.style.background = 'rgba(239, 68, 68, 0.1)';
+        }
+      } catch (e) { }
+    }
+
+    async function toggleSystem() {
+      const btn = document.getElementById('btn-pause');
+      const isPaused = btn.innerHTML.includes('RESUME');
+      const newStatus = isPaused ? 'active' : 'paused';
+
+      btn.innerText = "Processing...";
+      await fetch(`/api/stats?action=set-status&status=${newStatus}`);
+      setTimeout(checkSystemStatus, 1000);
+    }
   </script>
 </body>
 

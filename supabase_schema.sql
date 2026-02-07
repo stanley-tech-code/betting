@@ -94,3 +94,15 @@ CREATE TABLE IF NOT EXISTS leads (
     status TEXT,
     timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- 6. SYSTEM CONFIG (For Remote Start/Stop)
+CREATE TABLE IF NOT EXISTS system_config (
+    key TEXT PRIMARY KEY,
+    value TEXT,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Insert default status if not exists
+INSERT INTO system_config (key, value)
+VALUES ('status', 'active')
+ON CONFLICT (key) DO NOTHING;

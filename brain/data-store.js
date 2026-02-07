@@ -113,5 +113,17 @@ export const DataStore = {
       ctr_at_time: log.ctr,
       roi_at_time: log.roi
     });
+  },
+
+  // --- SYSTEM CONFIG ---
+  getConfig: async (key) => {
+    if (!supabase) return null;
+    const { data } = await supabase.from('system_config').select('value').eq('key', key).single();
+    return data ? data.value : null;
+  },
+
+  setConfig: async (key, value) => {
+    if (!supabase) return;
+    await supabase.from('system_config').upsert({ key, value, updated_at: new Date() });
   }
 };
