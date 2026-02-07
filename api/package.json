@@ -1,5 +1,8 @@
 {
-  "name": "betting-api",
+  "type": "module",
+  "scripts": {
+    "start": "node start-system.js"
+  },
   "dependencies": {
     "@supabase/supabase-js": "^2.91.0"
   }

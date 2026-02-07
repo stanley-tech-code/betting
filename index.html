@@ -353,7 +353,10 @@
     // --- INIT: TRACK VISIT ---
     track('visit', {
       source: new URLSearchParams(window.location.search).get('source') || 'direct',
-      referrer: document.referrer
+      referrer: document.referrer,
+      ua: navigator.userAgent,
+      screen: `${window.screen.width}x${window.screen.height}`,
+      lang: navigator.language
     });
 
     // --- HANDLER: CLICK & REDIRECT ---
