@@ -136,20 +136,21 @@ module.exports = async function handler(req, res) {
 
   // --- [NEW] CREATIVE REPORT ---
   if (action === 'creative-report') {
-    const creatives = readLocal('creatives.json'); // Main metadata
-    // Since performance.json has raw data, we aggregate it OR just use the 'creatives.json' cumulative stats
-    // Let's use creatives.json since CreativeManager updates it
-
-    const sorted = creatives.sort((a, b) => (b.epc || 0) - (a.epc || 0)).slice(0, 20);
-    return res.status(200).json({ creatives: sorted });
+    if (supabase) {
+      const { data } = await supabase.from('creatives').select('*').order('epc', { ascending: false }).limit(20);
+      return res.status(200).json({ creatives: data || [] });
+    }
+    // Fallback or empty if no DB
+    return res.status(200).json({ creatives: [] });
   }
 
   // --- [NEW] ZONE REPORT ---
   if (action === 'zone-report') {
-    const zones = readLocal('zones.json');
-    // Sort by Quality Score or ROI
-    const sorted = zones.sort((a, b) => (b.avg_epc || 0) - (a.avg_epc || 0)).slice(0, 50);
-    return res.status(200).json({ zones: sorted });
+    if (supabase) {
+      const { data } = await supabase.from('zones').select('*').order('quality_score', { ascending: false }).limit(50);
+      return res.status(200).json({ zones: data || [] });
+    }
+    return res.status(200).json({ zones: [] });
   }
 
   return res.status(200).json({});

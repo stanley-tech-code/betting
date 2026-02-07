@@ -24,7 +24,7 @@ export const CreativeManager = {
         total_conversions: stats.conversions,
         conversion_rate: stats.clicks > 0 ? (stats.conversions / stats.clicks) * 100 : 0
       };
-      DataStore.saveCreative(creativeData);
+      await DataStore.saveCreative(creativeData);
 
       // 2. Rules Engine
       await applyRules(creativeData, camp);

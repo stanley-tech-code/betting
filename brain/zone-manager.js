@@ -33,8 +33,8 @@ export const ZoneManager = {
         };
 
         // 1. Save to DB
-        DataStore.updateZone(zoneData);
-        DataStore.recordPerf({
+        await DataStore.updateZone(zoneData);
+        await DataStore.recordPerf({
           creative_id: camp.id.toString(),
           zone_id: z.zone_id,
           ...zoneData
@@ -82,7 +82,7 @@ export const ZoneManager = {
   }
 };
 
-function logBlock(zoneId, reason) {
+async function logBlock(zoneId, reason) {
   Logger.log('BLOCK', `Zone ${zoneId} blocked: ${reason}`);
-  DataStore.updateZone({ zone_id: zoneId, status: 'blocked' });
+  await DataStore.updateZone({ zone_id: zoneId, status: 'blocked' });
 }
