@@ -16,7 +16,7 @@ export const startBrain = async () => {
   });
 };
 
-const runCycle = async () => {
+export const runCycle = async () => {
   console.log(chalk.white.bold(`\n🔄 Cycle Started: ${new Date().toLocaleTimeString()}`));
 
   // 0. CHECK REMOTE STATUS
