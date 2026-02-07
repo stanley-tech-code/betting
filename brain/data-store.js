@@ -115,6 +115,23 @@ export const DataStore = {
     });
   },
 
+  // --- SYSTEM LOGS ---
+  saveSystemLog: async (entry) => {
+    if (!supabase) return;
+    await supabase.from('system_logs').insert({
+      type: entry.type,
+      message: entry.message,
+      details: entry.details,
+      created_at: entry.timestamp
+    });
+  },
+
+  getSystemLogs: async (limit = 20) => {
+    if (!supabase) return [];
+    const { data } = await supabase.from('system_logs').select('*').order('created_at', { ascending: false }).limit(limit);
+    return data || [];
+  },
+
   // --- SYSTEM CONFIG ---
   getConfig: async (key) => {
     if (!supabase) return null;
