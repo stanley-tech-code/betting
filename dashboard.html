@@ -3,820 +3,538 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>A.K.Maina System</title>
+  <title>AI Campaign Manager</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
-      /* A.K.Maina System PALETTE */
-      --bg: #0f0f11;
+      --bg: #09090b;
       --surface: #18181b;
-      --surface-hover: #27272a;
-      --border: #3f3f46;
-      --text-primary: #f4f4f5;
-      --text-secondary: #a1a1aa;
-      --brand-gradient: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
-      --accent-purple: #a855f7;
+      --surface-border: #27272a;
+      --primary: #8b5cf6;
       --success: #10b981;
-      --danger: #ef4444;
       --warning: #f59e0b;
+      --danger: #ef4444;
+      --text-main: #f4f4f5;
+      --text-muted: #a1a1aa;
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-sans: 'Inter', sans-serif;
     }
 
     * {
       box-sizing: border-box;
-      margin: 0;
-      padding: 0;
     }
 
     body {
-      background-color: var(--bg);
-      color: var(--text-primary);
-      font-family: 'Inter', sans-serif;
-      padding: 40px;
+      background: var(--bg);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      padding: 20px;
+      margin: 0;
       min-height: 100vh;
     }
 
-    h1,
-    h2,
-    h3 {
-      font-weight: 500;
-      letter-spacing: -0.02em;
+    /* LAYOUT UTILS */
+    .grid {
+      display: grid;
+      gap: 20px;
     }
 
-    /* GRID SYSTEM */
-    .wrapper {
-      max-width: 1400px;
-      margin: 0 auto;
-      display: grid;
-      gap: 24px;
+    .grid-2 {
+      grid-template-columns: 1fr 1fr;
     }
 
     .grid-4 {
-      display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 24px;
     }
 
-    .grid-main {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 24px;
+    .w-full {
+      width: 100%;
     }
 
-    /* CARDS */
-    .card {
+    .flex {
+      display: flex;
+    }
+
+    .items-center {
+      align-items: center;
+    }
+
+    .justify-between {
+      justify-content: space-between;
+    }
+
+    .gap-2 {
+      gap: 8px;
+    }
+
+    .gap-4 {
+      gap: 16px;
+    }
+
+    .mb-4 {
+      margin-bottom: 16px;
+    }
+
+    .text-sm {
+      font-size: 0.875rem;
+    }
+
+    .text-xs {
+      font-size: 0.75rem;
+    }
+
+    .font-mono {
+      font-family: var(--font-mono);
+    }
+
+    .font-bold {
+      font-weight: 700;
+    }
+
+    .text-success {
+      color: var(--success);
+    }
+
+    .text-warning {
+      color: var(--warning);
+    }
+
+    .text-danger {
+      color: var(--danger);
+    }
+
+    .text-muted {
+      color: var(--text-muted);
+    }
+
+    /* COMPONENTS */
+    .panel {
       background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px;
-      transition: transform 0.2s, box-shadow 0.2s;
+      border: 1px solid var(--surface-border);
+      border-radius: 8px;
+      padding: 16px;
+      overflow: hidden;
     }
 
-    .card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5);
-      border-color: #52525b;
-    }
-
-    /* HEADER */
-    .brand-header {
-      margin-bottom: 40px;
+    .panel-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--surface-border);
     }
 
-    .brand-logo {
-      font-size: 1.5rem;
+    .panel-title {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 0.9rem;
+    }
+
+    /* HEADER */
+    .top-bar {
+      border: 1px solid var(--primary);
+      background: rgba(139, 92, 246, 0.05);
+      padding: 12px 20px;
+      border-radius: 4px;
+      margin-bottom: 24px;
+      font-family: var(--font-mono);
+    }
+
+    /* FEED */
+    .feed-container {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .feed-item {
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      display: flex;
+      gap: 10px;
+    }
+
+    .feed-time {
+      color: var(--text-muted);
+      min-width: 70px;
+    }
+
+    .feed-content {
+      flex: 1;
+    }
+
+    /* STAT CARD */
+    .stat-card {
+      background: rgba(255, 255, 255, 0.02);
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid var(--surface-border);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .stat-val {
+      font-size: 1.25rem;
       font-weight: 600;
-      background: var(--brand-gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      font-family: var(--font-mono);
     }
 
-    /* METRICS */
-    .metric-label {
-      font-size: 0.85rem;
-      color: var(--text-secondary);
-      margin-bottom: 8px;
-      font-weight: 500;
+    /* PROCESS MONITOR */
+    .process-item {
+      margin-bottom: 12px;
     }
 
-    .metric-val {
-      font-size: 2.2rem;
+    .process-name {
       font-weight: 600;
-      letter-spacing: -0.03em;
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
     }
 
-    .metric-change {
-      font-size: 0.85rem;
-      color: var(--success);
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      background: rgba(16, 185, 129, 0.1);
-      padding: 2px 8px;
-      border-radius: 99px;
-      margin-top: 8px;
+    .progress-bar-bg {
+      background: #27272a;
+      height: 6px;
+      border-radius: 3px;
+      overflow: hidden;
     }
 
-    /* TABLE */
-    table {
+    .progress-bar-fill {
+      background: var(--success);
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s;
+    }
+
+    .process-substep {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+      padding-left: 10px;
+      border-left: 2px solid var(--surface-border);
+    }
+
+    /* AUDIT REPORT */
+    .audit-table {
       width: 100%;
       border-collapse: collapse;
-    }
-
-    th {
-      text-align: left;
-      color: var(--text-secondary);
-      padding: 16px 0;
-      border-bottom: 1px solid var(--border);
       font-size: 0.85rem;
-      font-weight: 500;
     }
 
-    td {
-      padding: 16px 0;
-      border-bottom: 1px solid var(--border);
-      font-size: 0.95rem;
+    .audit-table td {
+      padding: 8px;
+      border-bottom: 1px solid var(--surface-border);
     }
 
-    tr:last-child td {
+    .audit-table tr:last-child td {
       border-bottom: none;
     }
 
-    .status-dot {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      margin-right: 8px;
-    }
-
-    .status-scale {
-      background: var(--success);
-      box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
-    }
-
-    .status-test {
-      background: var(--warning);
-    }
-
-    .status-pause {
-      background: var(--danger);
-    }
-
-    .btn-action-sm {
-      padding: 6px 12px;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--text-primary);
-      cursor: pointer;
-      font-size: 0.8rem;
-      margin-right: 5px;
-      transition: 0.2s;
-    }
-
-    .btn-action-sm:hover {
-      background: var(--surface-hover);
-      border-color: var(--text-secondary);
-    }
-
-    .btn-apply {
-      background: var(--accent-purple);
-      border-color: var(--accent-purple);
-      color: white;
-    }
-
-    .btn-apply:hover {
-      background: #9333ea;
-    }
-
-    /* AI DISPLAY */
-    .ai-panel {
-      background: linear-gradient(180deg, var(--surface) 0%, #1c1c22 100%);
-    }
-
-    .chat-msg {
-      background: var(--surface-hover);
-      padding: 12px 16px;
-      border-radius: 8px;
-      margin-bottom: 12px;
-      font-size: 0.9rem;
-      border-left: 2px solid var(--accent-purple);
-    }
-
-    .alert-item {
-      background: rgba(239, 68, 68, 0.1);
-      border-left: 3px solid var(--danger);
-      color: #fca5a5;
-      padding: 10px;
-      font-size: 0.85rem;
-      margin-bottom: 10px;
-    }
-
-    /* CALC INPUTS */
-    .calc-input-group {
-      margin-bottom: 15px;
-    }
-
-    .calc-input-group label {
-      display: block;
-      font-size: 0.8rem;
-      color: var(--text-secondary);
-      margin-bottom: 5px;
-    }
-
-    .calc-input-group input {
-      width: 100%;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      color: #fff;
-      padding: 8px;
-      border-radius: 6px;
-      font-family: 'Inter';
-    }
-
-    .calc-result-box {
-      background: rgba(168, 85, 247, 0.05);
-      border: 1px solid rgba(168, 85, 247, 0.2);
-      padding: 15px;
-      border-radius: 8px;
-      text-align: center;
-    }
-
-    .calc-val {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: #fff;
-    }
-
-    .calc-sub {
-      font-size: 0.8rem;
-      color: var(--text-secondary);
+    /* ACTION LOG */
+    .action-badge {
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: bold;
       text-transform: uppercase;
     }
 
-    .profit-pos {
+    .badge-success {
+      background: rgba(16, 185, 129, 0.2);
       color: var(--success);
     }
 
-    .profit-neg {
+    .badge-warning {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--warning);
+    }
+
+    .badge-danger {
+      background: rgba(239, 68, 68, 0.2);
       color: var(--danger);
+    }
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #3f3f46;
+      border-radius: 3px;
+    }
+
+    /* UTILS */
+    .blink {
+      animation: blinker 2s linear infinite;
+    }
+
+    @keyframes blinker {
+      50% {
+        opacity: 0.5;
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <div class="wrapper">
+  <!-- HEADER -->
+  <div class="top-bar flex justify-between items-center">
+    <div>
+      <h1 style="margin:0; font-size:1.1rem; letter-spacing:1px;">AI CAMPAIGN MANAGER <span class="text-primary">//
+          DASHBOARD</span></h1>
+    </div>
+    <div class="text-xs text-muted flex items-center gap-4">
+      <span id="last-updated">Last Updated: Just now</span>
+      <span class="text-success blink">● SYSTEM ONLINE</span>
+      <button id="btn-pause" onclick="toggleSystem()"
+        style="background:transparent; border:1px solid var(--danger); color:var(--danger); padding:4px 10px; cursor:pointer; font-family:inherit;">⏸
+        PAUSE ALL</button>
+    </div>
+  </div>
 
-    <!-- HEADER -->
-    <div class="brand-header">
-      <div class="brand-logo">A.K.Maina System</div>
-      <div style="display:flex; align-items:center; gap:15px;">
-        <div id="sys-indicator"
-          style="font-size:0.8rem; color:var(--success); display:flex; align-items:center; gap:6px;">
-          <div style="width:8px; height:8px; background:currentColor; border-radius:50%; animation:pulse 2s infinite;">
-          </div>
-          SYSTEM ONLINE
+  <div class="grid grid-2" style="grid-template-columns: 2fr 1fr;">
+
+    <!-- LEFT COL -->
+    <div class="grid">
+
+      <!-- LIVE FEED -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">🔴 LIVE ACTIVITY FEED</div>
+          <div class="text-xs text-muted">[Auto-refresh: ON]</div>
         </div>
-        <button id="btn-pause" onclick="toggleSystem()"
-          style="padding:8px 16px; border-radius:6px; border:1px solid var(--danger); background:rgba(239,68,68,0.1); color:var(--danger); cursor:pointer; font-weight:600;">
-          ⏸ PAUSE BUYING
-        </button>
+        <div class="feed-container" id="activity-feed">
+          <div class="feed-item"><span class="feed-time">--:--</span><span class="feed-content">Connecting to AI
+              Brain...</span></div>
+        </div>
       </div>
+
+      <!-- KEY METRICS -->
+      <div class="grid grid-4">
+        <div class="stat-card">
+          <div class="stat-label">Daily Budget</div>
+          <div class="stat-val">$200.00</div>
+          <div class="text-xs text-muted">Spent: $87 (43%)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Real-Time CTR</div>
+          <div class="stat-val" id="stat-ctr">--%</div>
+          <div class="text-xs text-success">Target: >1.8%</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Active Creatives</div>
+          <div class="stat-val" id="stat-creatives">--</div>
+          <div class="text-xs text-muted">Thinking...</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">ROI (Est)</div>
+          <div class="stat-val text-success" id="stat-roi">--%</div>
+        </div>
+      </div>
+
+      <!-- AUDIT REPORT -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">📊 10-MINUTE PERFORMANCE AUDIT</div>
+          <div class="text-xs text-muted" id="audit-time">Waiting for report...</div>
+        </div>
+        <div class="audit-content" id="audit-report">
+          <div style="padding:20px; text-align:center; color:var(--text-muted); font-style:italic;">
+            No audit generated yet. Next cycle in ~5 mins.
+          </div>
+        </div>
+      </div>
+
     </div>
 
-    <!-- ROW 1: METRICS -->
-    <div class="grid-4" style="grid-template-columns: repeat(3, 1fr);">
-      <div class="card">
-        <div class="metric-label">Total Visits</div>
-        <div class="metric-val" id="m-visits">-</div>
-        <div class="metric-change">Analysis Active</div>
-      </div>
-      <div class="card">
-        <div class="metric-label">Total Clicks</div>
-        <div class="metric-val" id="m-clicks">-</div>
-        <div class="metric-change" style="color:var(--accent-purple); background:rgba(168, 85, 247, 0.1);">CTA Taps
+    <!-- RIGHT COL -->
+    <div class="grid">
+
+      <!-- AI PROCESS MONITOR -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">🤖 AI BRAIN PROCESSES</div>
+        </div>
+        <div id="process-list">
+          <div class="text-xs text-muted">Waiting for execution cycle...</div>
         </div>
       </div>
-      <div class="card">
-        <div class="metric-label">Conversion Rate</div>
-        <div class="metric-val" id="m-cr">0.0%</div>
+
+      <!-- HEALTH SCORE -->
+      <div class="panel" style="text-align:center;">
+        <div class="panel-title" style="margin-bottom:10px;">🚦 SYSTEM HEALTH</div>
+        <div id="health-score" style="font-size:3rem; font-weight:700; color:var(--success);">--</div>
+        <div class="text-xs text-muted">OPTIMIZED</div>
       </div>
+
     </div>
-
-    <!-- ROW 2: MAIN VISUALS -->
-    <div class="grid-main">
-      <div class="card">
-        <h2 style="margin-bottom:24px; font-size:1rem;">Traffic Velocity</h2>
-        <div style="height:300px;"><canvas id="mainChart"></canvas></div>
-      </div>
-      <div class="card">
-        <h2 style="margin-bottom:16px; font-size:1rem;">Performance Patterns</h2>
-        <div id="peakLabel" style="font-size:0.85rem; color:var(--success); margin-bottom:16px; font-weight:600;">
-          Loading insights...</div>
-
-        <div style="margin-bottom:12px; font-size:0.75rem; color:var(--text-secondary);">BY HOUR (24h)</div>
-        <div style="height:120px; margin-bottom:20px;"><canvas id="hourChart"></canvas></div>
-
-        <div style="margin-bottom:12px; font-size:0.75rem; color:var(--text-secondary);">BY DAY (Weekly)</div>
-        <div style="height:120px; margin-bottom:12px;"><canvas id="dayChart"></canvas></div>
-
-        <!-- NEW: Daily Peak Times Grid -->
-        <div id="dailyPeaks" style="display:grid; grid-template-columns:repeat(7, 1fr); gap:2px; text-align:center;">
-          <!-- JS will populate this -->
-        </div>
-      </div>
-    </div>
-
-    <!-- ROW 3: INTELLIGENCE & DATA -->
-    <div class="grid-main">
-
-      <!-- BUDGET CONTROL CENTER -->
-      <div class="card" style="border-top: 2px solid var(--accent-purple);">
-        <h2 style="margin-bottom:15px; font-size:1rem;">💰 Budget Control Center</h2>
-
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-          <!-- GATES -->
-          <div style="background:rgba(255,255,255,0.02); padding:15px; border-radius:8px;">
-            <div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:10px;">INCREASE GATES</div>
-
-            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-              <span>CTR &ge; 1.8%</span>
-              <span id="gate-ctr" style="color:var(--text-secondary)">Checking...</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-              <span>ROI &ge; 150%</span>
-              <span id="gate-roi" style="color:var(--text-secondary)">Checking...</span>
-            </div>
-            <div style="display:flex; justify-content:space-between;">
-              <span>Wait 48h</span>
-              <span id="gate-time" style="color:var(--success)">✅ Passed</span>
-            </div>
-          </div>
-
-          <!-- STATUS -->
-          <div>
-            <div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:5px;">APPROVAL STATUS</div>
-            <div id="budget-status" style="font-size:1.2rem; font-weight:bold; color:var(--text-secondary)">HOLDING
-            </div>
-            <div id="budget-msg" style="font-size:0.8rem; margin-top:5px; color:#666;">Optimizing performance...</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- AI Sidebar -->
-      <div class="card ai-panel">
-        <h2 style="margin-bottom:20px; font-size:1rem; display:flex; align-items:center; gap:8px;">
-          <span style="width:8px; height:8px; background:var(--accent-purple); border-radius:50%;"></span>
-          Propeller Advisor
-        </h2>
-        <div id="alertsArea"></div>
-        <div id="aiFeed">
-          <div class="chat-msg">Calculating allocation...</div>
-        </div>
-        <div style="margin-top:20px; border-top:1px solid var(--border); padding-top:20px;">
-          <span style="font-size:0.8rem; color:var(--text-secondary);">Logs Active</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- ROW 4: DEEP REPORTS -->
-    <div class="grid-main">
-      <div class="card">
-        <div class="card-header" style="display:flex; justify-content:space-between; margin-bottom:15px;">
-          <h3>🏆 Best Zones</h3>
-          <span class="badge"
-            style="background:var(--success); color:#fff; padding:2px 8px; border-radius:10px; font-size:0.75rem;">Live</span>
-        </div>
-        <div style="overflow-x:auto;">
-          <table id="zoneTable">
-            <thead>
-              <tr>
-                <th>Zone ID</th>
-                <th>Spend</th>
-                <th>CTR</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td colspan="4" style="text-align:center; color:var(--text-secondary)">Loading...</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header" style="display:flex; justify-content:space-between; margin-bottom:15px;">
-          <h3>🎨 Creative Stats</h3>
-          <button class="btn-action-sm" onclick="loadReports()">↻</button>
-        </div>
-        <div style="overflow-x:auto;">
-          <table id="creativeTable">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Clicks</th>
-                <th>Conv</th>
-                <th>Spend</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td colspan="4" style="text-align:center; color:var(--text-secondary)">Loading...</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ROW 4: PROFIT CALCULATOR -->
-    <div class="card"
-      style="background: linear-gradient(180deg, var(--surface) 0%, #151518 100%); border-top: 2px solid var(--accent-purple);">
-      <h2 style="margin-bottom:20px; font-size:1rem;">💰 Financial Projection Console</h2>
-
-      <div class="grid-4">
-        <!-- Inputs -->
-        <div>
-          <div class="calc-input-group">
-            <label>Daily Budget ($)</label>
-            <input type="number" id="c-budget" value="100" oninput="calc()">
-          </div>
-          <div class="calc-input-group">
-            <label>Avg CPC ($)</label>
-            <input type="number" id="c-cpc" value="0.03" step="0.01" oninput="calc()">
-          </div>
-        </div>
-        <div>
-          <div class="calc-input-group">
-            <label>Exp. Conversion Rate (%)</label>
-            <input type="number" id="c-cr" value="4.5" step="0.1" oninput="calc()">
-          </div>
-          <div class="calc-input-group">
-            <label>CPA (Revenue per Lead $)</label>
-            <input type="number" id="c-cpa" value="1.50" step="0.1" oninput="calc()">
-          </div>
-        </div>
-
-        <!-- Results -->
-        <div class="calc-result-box">
-          <div class="calc-val" id="r-leads">0</div>
-          <div class="calc-sub">Est. Daily Leads</div>
-          <div style="margin-top:10px; font-size:0.9rem; color:var(--text-secondary);">
-            Visits: <span id="r-visits" style="color:#fff">0</span>
-          </div>
-        </div>
-
-        <div class="calc-result-box" style="border-color:rgba(16, 185, 129, 0.2); background:rgba(16, 185, 129, 0.05);">
-          <div class="calc-val profit-pos" id="r-profit">$0.00</div>
-          <div class="calc-sub">Net Profit (Daily)</div>
-          <div style="margin-top:10px; font-size:0.9rem;">
-            ROI: <span id="r-roi">0%</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ROW 5: REMOVED (Leads Data) -->
-
   </div>
 
   <script>
-    // CONFIG
-    Chart.defaults.font.family = 'Inter';
-    Chart.defaults.color = '#71717a';
-    Chart.defaults.scale.grid.color = '#27272a';
+    const API_BASE = '/api/stats';
 
-    const fmt = n => new Intl.NumberFormat().format(n);
-    const baseUrl = window.location.origin;
+    async function fetchData() {
+      // 1. Activities
+      const actRes = await fetch(`${API_BASE}?action=get-activities`);
+      const actData = await actRes.json();
+      renderActivities(actData.activities);
 
-    async function init() {
-      loadStats();
-      loadCharts();
-      loadAI();
-      // loadLeads(); // Removed
-      // checkAutoDownload(); // Removed
-      calc(); // Run Calc once
+      // 2. Audit
+      const audRes = await fetch(`${API_BASE}?action=get-audit`);
+      const audData = await audRes.json();
+      renderAudit(audData.audit);
 
-      // Real-time updates
-      setInterval(loadStats, 2000); // Update stats every 2s
-      setInterval(pollWatchdog, 10000);
-      pollWatchdog();
+      // 3. Processes
+      const procRes = await fetch(`${API_BASE}?action=get-processes`);
+      const procData = await procRes.json();
+      renderProcesses(procData.processes);
+
+      // 4. Status Check
+      checkSystemStatus();
+
+      document.getElementById('last-updated').innerText = `Last Updated: ${new Date().toLocaleTimeString()}`;
     }
 
-    function downloadLeads() {
-      alert("Lead Logs have been disabled.");
+    function renderActivities(items) {
+      const feed = document.getElementById('activity-feed');
+      if (!items || items.length === 0) return;
+
+      feed.innerHTML = items.map(item => `
+        <div class="feed-item">
+          <span class="feed-time">${new Date(item.timestamp).toLocaleTimeString([], { hour12: false })}</span>
+          <span class="feed-content">
+            <span style="margin-right:8px;">${item.icon || '📌'}</span>
+            ${item.message}
+          </span>
+        </div>
+      `).join('');
     }
 
-    // Leads logic removed as requested
+    function renderProcesses(items) {
+      const list = document.getElementById('process-list');
+      if (!items || items.length === 0) return;
 
-    // --- CALCULATOR LOGIC ---
-    function calc() {
-      const budget = parseFloat(document.getElementById('c-budget').value) || 0;
-      const cpc = parseFloat(document.getElementById('c-cpc').value) || 0;
-      const cr = parseFloat(document.getElementById('c-cr').value) || 0;
-      const cpa = parseFloat(document.getElementById('c-cpa').value) || 0;
-
-      if (cpc <= 0) return;
-
-      const visits = Math.floor(budget / cpc);
-      const leads = Math.floor(visits * (cr / 100));
-      const revenue = leads * cpa;
-      const profit = revenue - budget;
-      const roi = budget > 0 ? ((profit / budget) * 100).toFixed(1) : 0;
-
-      document.getElementById('r-visits').innerText = fmt(visits);
-      document.getElementById('r-leads').innerText = fmt(leads);
-
-      const pEl = document.getElementById('r-profit');
-      pEl.innerText = '$' + profit.toFixed(2);
-      pEl.className = profit >= 0 ? 'calc-val profit-pos' : 'calc-val profit-neg';
-
-      const rEl = document.getElementById('r-roi');
-      rEl.innerText = roi + '%';
-      rEl.style.color = roi >= 0 ? 'var(--success)' : 'var(--danger)';
-    }
-
-    // --- STANDARD DASHBOARD LOGIC ---
-    async function loadStats() {
-      try {
-        const res = await fetch('/api/stats?action=dashboard-summary');
-        const data = await res.json();
-
-        if (data.today) {
-          // Visits
-          document.getElementById('m-visits').innerText = fmt(data.today.visits);
-          const vPill = document.querySelector('#m-visits').nextElementSibling;
-          vPill.innerText = data.growth.visits + " vs yest";
-          vPill.style.color = data.growth.visits.includes('-') ? 'var(--danger)' : 'var(--success)';
-          vPill.style.background = data.growth.visits.includes('-') ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)';
-
-          // Clicks
-          document.getElementById('m-clicks').innerText = fmt(data.today.clicks);
-          const cPill = document.querySelector('#m-clicks').nextElementSibling;
-          cPill.innerText = data.growth.clicks + " vs yest";
-          cPill.style.color = data.growth.clicks.includes('-') ? 'var(--danger)' : 'var(--success)';
-          cPill.style.background = data.growth.clicks.includes('-') ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)';
-
-          // CTR
-          document.getElementById('m-cr').innerText = data.today.ctr;
-        }
-      } catch (e) { console.error("Stats Load Error", e); }
-    }
-
-    async function loadCharts() {
-      const hRes = await fetch('/api/stats?action=history');
-      const hData = await hRes.json();
-
-      new Chart(document.getElementById('mainChart'), {
-        type: 'line',
-        data: {
-          labels: hData.labels,
-          datasets: [{
-            label: 'Visits', data: hData.datasets.visits,
-            borderColor: '#a855f7', backgroundColor: 'rgba(168, 85, 247, 0.1)',
-            fill: true, tension: 0.4, borderWidth: 2, pointRadius: 0
-          }]
-        },
-        options: { plugins: { legend: { display: false } }, maintainAspectRatio: false }
-      });
-
-      // --- PERFORMANCE CHARTS ---
-      const pRes = await fetch('/api/stats?action=performance');
-      const pData = await pRes.json();
-
-      // Helper to format AM/PM
-      const hrs = Array.from({ length: 24 }, (_, i) => i === 0 ? '12AM' : (i < 12 ? i + 'AM' : (i === 12 ? '12PM' : (i - 12) + 'PM')));
-      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-      // Highlights
-      document.getElementById('peakLabel').innerHTML = `🔥 Best Time: <span style="color:#fff">${hrs[pData.peakHour]}</span> on <span style="color:#fff">${days[pData.bestDay]}</span>`;
-
-      // Hour Chart
-      new Chart(document.getElementById('hourChart'), {
-        type: 'bar',
-        data: {
-          labels: hrs,
-          datasets: [{
-            data: pData.hourly,
-            backgroundColor: pData.hourly.map((v, i) => i === pData.peakHour ? '#10b981' : '#3f3f46'),
-            borderRadius: 4
-          }]
-        },
-        options: { plugins: { legend: { display: false } }, maintainAspectRatio: false, scales: { x: { display: false }, y: { display: false } } }
-      });
-
-      // Day Chart
-      new Chart(document.getElementById('dayChart'), {
-        type: 'bar',
-        data: {
-          labels: days,
-          datasets: [{
-            data: pData.daily,
-            backgroundColor: pData.daily.map((v, i) => i === pData.bestDay ? '#10b981' : '#a855f7'),
-            borderRadius: 4
-          }]
-        },
-        options: { plugins: { legend: { display: false } }, maintainAspectRatio: false, scales: { y: { display: false }, x: { grid: { display: false } } } }
-      });
-
-      // Populate Daily Peak Times Grid
-      const peaksEl = document.getElementById('dailyPeaks');
-      peaksEl.innerHTML = '';
-      days.forEach((d, i) => {
-        const h = pData.bestHours[i];
-        const timeStr = h === -1 ? '-' : (hrs[h] || h + 'H');
-        const color = i === pData.bestDay ? 'var(--success)' : 'var(--text-secondary)';
-
-        peaksEl.innerHTML += `
-          <div style="font-size:0.7rem; background:rgba(255,255,255,0.03); padding:4px 0; border-radius:4px;">
-            <div style="color:#666; margin-bottom:2px;">${d.charAt(0)}</div>
-            <div style="color:${color}; font-weight:700;">${timeStr}</div>
+      list.innerHTML = items.map(proc => `
+        <div class="process-item">
+          <div class="process-name">
+            <span>${proc.description || proc.name}</span>
+            <span class="${proc.status === 'RUNNING' ? 'text-warning blink' : 'text-success'}">${proc.status}</span>
           </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" style="width: ${proc.progress || 0}%"></div>
+          </div>
+          <div class="process-substep">${proc.substeps && proc.substeps.length > 0 ? proc.substeps[proc.substeps.length - 1] : 'Initializing...'}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderAudit(audit) {
+      if (!audit) return;
+
+      // Update header metrics based on audit
+      document.getElementById('stat-ctr').innerText = audit.ctr_current + '%';
+      document.getElementById('stat-roi').innerText = parseInt(audit.roi_current) + '%';
+      document.getElementById('health-score').innerText = audit.health_score;
+      document.getElementById('audit-time').innerText = `Generated: ${new Date(audit.timestamp).toLocaleTimeString()}`;
+
+      const report = document.getElementById('audit-report');
+
+      let trendIcon = audit.ctr_current >= audit.ctr_previous ? '📈' : '📉';
+      let trendClass = audit.ctr_current >= audit.ctr_previous ? 'text-success' : 'text-danger';
+
+      report.innerHTML = `
+          <div class="grid grid-2 gap-4 mb-4">
+            <div class="stat-card">
+              <div class="stat-label">CTR Trend</div>
+              <div class="stat-val ${trendClass}">${audit.ctr_current}% ${trendIcon}</div>
+              <div class="text-xs text-muted">Prev: ${audit.ctr_previous}%</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Impressions</div>
+              <div class="stat-val">${audit.impressions_current.toLocaleString()}</div>
+              <div class="text-xs text-muted">+${audit.impressions_current - audit.impressions_previous} vs last</div>
+            </div>
+          </div>
+          
+          <div class="mb-4">
+             <div class="text-xs text-muted mb-2 font-bold">RECOMMENDATIONS</div>
+             ${audit.recommendations ? audit.recommendations.map(r => `<div class="feed-item" style="border:none; padding:4px 0;">⚡ ${r}</div>`).join('') : '<div class="text-xs">No active recommendations.</div>'}
+          </div>
+
+          <table class="audit-table">
+            <tr>
+               <td>Clicks</td>
+               <td class="text-right font-mono">${audit.clicks_current}</td>
+               <td class="text-right text-success">+${((audit.clicks_current - audit.clicks_previous) / (audit.clicks_previous || 1) * 100).toFixed(1)}%</td>
+            </tr>
+            <tr>
+               <td>Spend (10m)</td>
+               <td class="text-right font-mono">$${audit.spend_current.toFixed(2)}</td>
+               <td class="text-right text-muted">-</td>
+            </tr>
+             <tr>
+               <td>EPC</td>
+               <td class="text-right font-mono">$${audit.epc_current}</td>
+               <td class="text-right text-success">✅</td>
+            </tr>
+          </table>
         `;
-      });
     }
-
-    async function loadAI() {
-      const res = await fetch('/api/engine?action=analyze');
-      const data = await res.json();
-      const feed = document.getElementById('aiFeed');
-      const table = document.querySelector("#variantTable tbody");
-
-      if (data.logs && data.logs.length > 0) {
-        feed.innerHTML = '';
-        data.logs.forEach(log => {
-          let icon = '🤖';
-          let color = 'var(--text-primary)';
-          if (log.type === 'KILL') { icon = '🔪'; color = 'var(--danger)'; }
-          if (log.type === 'SCALE') { icon = '🚀'; color = 'var(--success)'; }
-          if (log.type === 'FRAUD') { icon = '🛡️'; color = 'var(--warning)'; }
-
-          feed.innerHTML += `
-                <div class="chat-msg" style="border-left-color:${color}">
-                    <div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:4px;">${new Date(log.timestamp).toLocaleTimeString()}</div>
-                    <b>${icon} ${log.type}</b>: ${log.message}
-                </div>
-             `;
-        });
-      }
-
-      // Legacy Table Logic (Optional - can be removed or kept if we send 'stats')
-      if (data.stats && data.stats.length > 0) {
-        table.innerHTML = '';
-        data.stats.forEach(s => {
-          // ... existing table logic ...
-        });
-      }
-    }
-
-    async function pollWatchdog() {
-      const res = await fetch('/api/traffic?action=monitor');
-      const data = await res.json();
-      if (data.alerts && data.alerts.length > 0) {
-        const alertArea = document.getElementById("alertsArea");
-        alertArea.innerHTML = "";
-        data.alerts.forEach(a => {
-          alertArea.innerHTML += `<div class="alert-item">⚠️ ${a.message}</div>`;
-        });
-      }
-    }
-
-    async function apply(id, weight, status) {
-      await fetch('/api/engine?action=apply-manual', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, weight, status })
-      });
-      // Also user must do it manually in Propeller
-      alert("Updated internal records.\n\n⚠️ IMPORTANT: Now go to Propeller Ads and set this link to " + weight + "% traffic.");
-      loadAI();
-    }
-
-    function copyURL(url) {
-      navigator.clipboard.writeText(url);
-      alert("URL Copied!");
-    }
-
-    async function loadBudget() {
-      // Mock data logic for display - in real app, fetch from /api/stats?action=budget
-      // We'll use the 'today' stats to simulate the gate check
-      const res = await fetch('/api/stats?action=dashboard-summary');
-      const data = await res.json();
-
-      if (!data.today) return;
-
-      const ctr = parseFloat(data.today.ctr);
-      const roi = 160; // Mock ROI for now as we don't have cost data fully wired in summary
-
-      const gateCtr = document.getElementById('gate-ctr');
-      const gateRoi = document.getElementById('gate-roi');
-      const status = document.getElementById('budget-status');
-      const msg = document.getElementById('budget-msg');
-
-      // Update UI
-      gateCtr.innerText = ctr + '%';
-      gateCtr.style.color = ctr >= 1.8 ? 'var(--success)' : 'var(--danger)';
-
-      gateRoi.innerText = roi + '%';
-      gateRoi.style.color = roi >= 150 ? 'var(--success)' : 'var(--danger)';
-
-      if (ctr >= 1.8 && roi >= 150) {
-        status.innerText = "APPROVED";
-        status.style.color = "var(--success)";
-        msg.innerText = "Scale Eligible: +25% Budget";
-      } else {
-        status.innerText = "DENIED";
-        status.style.color = "var(--danger)";
-        msg.innerText = "Requirements not met.";
-      }
-    }
-
-    async function loadReports() {
-      // Load Zones
-      const zRes = await fetch('/api/stats?action=zone-report');
-      const zData = await zRes.json();
-      const zTable = document.querySelector("#zoneTable tbody");
-      if (zData.zones && zData.zones.length > 0) {
-        zTable.innerHTML = '';
-        zData.zones.forEach(z => {
-          zTable.innerHTML += `<tr>
-                    <td>${z.zone_id}</td>
-                    <td>$${(z.total_spend || 0).toFixed(2)}</td>
-                    <td>${(z.total_impressions > 0 ? (z.clicks / z.total_impressions) * 100 : 0).toFixed(2)}%</td>
-                    <td>${z.status}</td>
-                </tr>`;
-        });
-      } else {
-        zTable.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-secondary)">No zone data yet</td></tr>';
-      }
-
-      // Load Creatives
-      const cRes = await fetch('/api/stats?action=creative-report');
-      const cData = await cRes.json();
-      const cTable = document.querySelector("#creativeTable tbody");
-      if (cData.creatives && cData.creatives.length > 0) {
-        cTable.innerHTML = '';
-        cData.creatives.forEach(c => {
-          cTable.innerHTML += `<tr>
-                    <td>${c.id}</td>
-                    <td>${c.clicks}</td>
-                    <td>${c.conversions}</td>
-                    <td>$${c.spend.toFixed(2)}</td>
-                </tr>`;
-        });
-      } else {
-        cTable.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-secondary)">No creative data yet</td></tr>';
-      }
-    }
-
-    init();
-    setInterval(loadReports, 60000);
-    setInterval(loadBudget, 10000); // Check gates often
-    setInterval(checkSystemStatus, 5000); // Check remote status
-    checkSystemStatus();
 
     async function checkSystemStatus() {
       try {
         const res = await fetch('/api/stats?action=get-status');
         const data = await res.json();
-        const ind = document.getElementById('sys-indicator');
         const btn = document.getElementById('btn-pause');
-
         if (data.status === 'paused') {
-          ind.style.color = 'var(--text-secondary)';
-          ind.innerHTML = '<div style="width:8px; height:8px; background:currentColor; border-radius:50%;"></div> SYSTEM PAUSED';
-          btn.innerHTML = '▶ RESUME BUYING';
+          btn.innerText = '▶ RESUME SYSTEM';
           btn.style.borderColor = 'var(--success)';
           btn.style.color = 'var(--success)';
-          btn.style.background = 'rgba(16, 185, 129, 0.1)';
         } else {
-          ind.style.color = 'var(--success)';
-          ind.innerHTML = '<div style="width:8px; height:8px; background:currentColor; border-radius:50%; animation:pulse 2s infinite;"></div> SYSTEM ONLINE';
-          btn.innerHTML = '⏸ PAUSE BUYING';
+          btn.innerText = '⏸ PAUSE ALL';
           btn.style.borderColor = 'var(--danger)';
           btn.style.color = 'var(--danger)';
-          btn.style.background = 'rgba(239, 68, 68, 0.1)';
         }
       } catch (e) { }
     }
 
     async function toggleSystem() {
       const btn = document.getElementById('btn-pause');
-      const isPaused = btn.innerHTML.includes('RESUME');
+      const isPaused = btn.innerText.includes('RESUME');
       const newStatus = isPaused ? 'active' : 'paused';
 
-      btn.innerText = "Processing...";
-      await fetch(`/api/stats?action=set-status&status=${newStatus}`);
-      setTimeout(checkSystemStatus, 1000);
+      await fetch('/api/stats?action=set-status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+      });
+      checkSystemStatus();
     }
+
+    // Init
+    setInterval(fetchData, 2000); // Fast polling for "Real-time" feel
+    fetchData();
+
   </script>
 </body>
 

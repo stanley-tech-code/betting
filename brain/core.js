@@ -30,16 +30,35 @@ export const runCycle = async () => {
   } catch (e) { console.error("Config Check Error:", e.message); }
 
   try {
+    const { ProcessMonitor, AuditService } = await import('./visibility.js');
+
     // 1. Analyze & Decide
+    await ProcessMonitor.startProcess('analysis_cycle', 'Running detailed campaign analysis');
+    await ProcessMonitor.updateProcess('analysis_cycle', { progress: 20, substeps: ['Fetching campaign data', 'Calculating CTR/ROI'] });
+
     const campaigns = await DecisionEngine.run();
+
+    await ProcessMonitor.updateProcess('analysis_cycle', { progress: 60, substeps: [`Analyzed ${campaigns ? campaigns.length : 0} campaigns`] });
 
     // 2. Fraud Check
     if (campaigns && campaigns.length > 0) {
+      await ProcessMonitor.updateProcess('analysis_cycle', { progress: 80, substeps: ['Scanning for bot patterns'] });
       await FraudGuard.scanAndBlock(campaigns);
     }
+
+    await ProcessMonitor.completeProcess('analysis_cycle', { status: 'success', campaigns_scanned: campaigns ? campaigns.length : 0 });
+
+    // 3. Audit Report
+    console.log(chalk.blue('📊 Generating 10-Minute Audit Report...'));
+    await AuditService.runAudit();
 
     console.log(chalk.green(`✨ Cycle Complete. Next run in 15m.`));
   } catch (err) {
     console.error(chalk.red('⚠️ Cycle Error:'), err.message);
+    // Log error to activity feed too
+    try {
+      const { ActivityLogger } = await import('./visibility.js');
+      await ActivityLogger.logAction('system_error', { message: err.message });
+    } catch (e) { }
   }
 };

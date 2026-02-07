@@ -139,8 +139,60 @@ export const DataStore = {
     return data ? data.value : null;
   },
 
-  setConfig: async (key, value) => {
+  // --- VISIBILITY & MONITORING ---
+
+  // Activities
+  logActivity: async (entry) => {
     if (!supabase) return;
-    await supabase.from('system_config').upsert({ key, value, updated_at: new Date() });
+    await supabase.from('activities').insert(entry);
+  },
+
+  getRecentActivities: async (limit = 50) => {
+    if (!supabase) return [];
+    const { data } = await supabase.from('activities').select('*').order('timestamp', { ascending: false }).limit(limit);
+    return data || [];
+  },
+
+  // Audits
+  saveAudit: async (audit) => {
+    if (!supabase) return;
+    await supabase.from('audits').insert(audit);
+  },
+
+  getLatestAudit: async () => {
+    if (!supabase) return null;
+    const { data } = await supabase.from('audits').select('*').order('timestamp', { ascending: false }).limit(1).single();
+    return data;
+  },
+
+  getAuditHistory: async (limit = 24) => {
+    if (!supabase) return [];
+    const { data } = await supabase.from('audits').select('timestamp, ctr_current, roi_current, health_score').order('timestamp', { ascending: false }).limit(limit);
+    return data || [];
+  },
+
+  // Decisions
+  logDecision: async (decision) => {
+    if (!supabase) return;
+    await supabase.from('decisions').insert(decision);
+  },
+
+  getRecentDecisions: async (limit = 20) => {
+    if (!supabase) return [];
+    const { data } = await supabase.from('decisions').select('*').order('timestamp', { ascending: false }).limit(limit);
+    return data || [];
+  },
+
+  // Processes
+  updateProcess: async (name, data) => {
+    if (!supabase) return;
+    // Upsert based on name
+    await supabase.from('processes').upsert({ name, ...data }, { onConflict: 'name' });
+  },
+
+  getProcesses: async () => {
+    if (!supabase) return [];
+    const { data } = await supabase.from('processes').select('*');
+    return data || [];
   }
 };

@@ -165,5 +165,30 @@ export default async function handler(req, res) {
     return res.status(200).json({ success: true, status: 'local-mock' });
   }
 
+  // --- [NEW] VISIBILITY ENDPOINTS ---
+  if (action === 'get-activities') {
+    if (supabase) {
+      const { data } = await supabase.from('activities').select('*').order('timestamp', { ascending: false }).limit(20);
+      return res.status(200).json({ activities: data || [] });
+    }
+    return res.status(200).json({ activities: [] });
+  }
+
+  if (action === 'get-audit') {
+    if (supabase) {
+      const { data } = await supabase.from('audits').select('*').order('timestamp', { ascending: false }).limit(1).single();
+      return res.status(200).json({ audit: data || null });
+    }
+    return res.status(200).json({ audit: null });
+  }
+
+  if (action === 'get-processes') {
+    if (supabase) {
+      const { data } = await supabase.from('processes').select('*');
+      return res.status(200).json({ processes: data || [] });
+    }
+    return res.status(200).json({ processes: [] });
+  }
+
   return res.status(200).json({});
 }
