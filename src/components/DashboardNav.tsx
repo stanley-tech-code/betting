@@ -9,7 +9,7 @@ export function DashboardNav() {
   const pathname = usePathname();
 
   const tabs = [
-    { name: 'PropellerAds', href: '/', icon: BarChart3 },
+    { name: 'PropellerAds', href: '/dashboard', icon: BarChart3 },
     { name: 'Landing Page', href: '/landing', icon: MousePointer2 },
   ];
 

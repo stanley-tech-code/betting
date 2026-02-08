@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
-        source: '/aviator',
+        source: '/',
         destination: '/index.html',
       },
     ];
