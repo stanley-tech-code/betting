@@ -25,13 +25,8 @@ export async function getCampaignStats(dateFrom: string, dateTo: string): Promis
   }
 
   // Try statistics endpoint first
-  const params = new URLSearchParams();
-  params.append('day_from', dateFrom);
-  params.append('day_to', dateTo);
-  params.append('group_by[]', 'campaign_id');
-
-  const queryString = params.toString().replace(/%5B/g, '[').replace(/%5D/g, ']');
-  const statsUrl = `${API_BASE_URL}/statistics?${queryString}`;
+  // Construct URL manually to avoid encoding issues with brackets []
+  const statsUrl = `${API_BASE_URL}/statistics?day_from=${dateFrom}&day_to=${dateTo}&group_by[]=campaign_id`;
 
   console.log(`📡 Fetching PropellerAds Stats: ${statsUrl}`);
 
