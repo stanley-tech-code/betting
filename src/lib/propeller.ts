@@ -12,7 +12,8 @@ export interface CampaignStats {
 }
 
 export interface PropellerResponse {
-  result: any[];
+  result?: any[];
+  items?: any[]; // [ADDED] Support 'items' key
   errors?: any[];
 }
 
@@ -33,7 +34,6 @@ export async function getCampaignStats(dateFrom: string, dateTo: string): Promis
   const statsUrl = `${API_BASE_URL}/statistics?${queryString}`;
 
   console.log(`📡 Fetching PropellerAds Stats: ${statsUrl}`);
-  console.log(`🔑 API Key Present: ${!!apiKey}`);
 
   try {
     const res = await fetch(statsUrl, {
@@ -42,7 +42,7 @@ export async function getCampaignStats(dateFrom: string, dateTo: string): Promis
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
-      cache: 'no-store'
+      next: { revalidate: 300 } // Cache for 5 mins
     });
 
     if (res.status === 429) {
@@ -59,23 +59,22 @@ export async function getCampaignStats(dateFrom: string, dateTo: string): Promis
     const data: PropellerResponse = await res.json();
     console.log('🔍 PropellerAds API Raw Response:', JSON.stringify(data, null, 2));
 
-    if (!data.result || data.result.length === 0) {
+    const list = data.result || data.items || [];
+
+    if (list.length === 0) {
       console.warn('⚠️ No statistics data. Falling back to campaigns endpoint...');
       return await getCampaignsAsFallback(apiKey, dateFrom, dateTo);
     }
 
-    console.log(`📊 Result array length: ${data.result?.length || 0}`);
-    if (data.result && data.result.length > 0) {
-      console.log(`📋 First item:`, JSON.stringify(data.result[0], null, 2));
-    }
+    console.log(`📊 Result array length: ${list.length}`);
 
-    return (data.result || []).map((item: any) => ({
+    return list.map((item: any) => ({
       campaign_id: item.campaign_id || 0,
       impressions: Number(item.impressions) || 0,
       clicks: Number(item.clicks) || 0,
       conversions: Number(item.conversions) || 0,
-      money_spent: Number(item.spent) || 0,
-      profit: Number(item.payout) || 0,
+      money_spent: Number(item.spent) || Number(item.money_spent) || 0,
+      profit: Number(item.payout) || Number(item.profit) || 0,
       date: dateTo
     }));
 
@@ -95,7 +94,7 @@ async function getCampaignsAsFallback(apiKey: string, dateFrom: string, dateTo: 
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json'
       },
-      cache: 'no-store'
+      next: { revalidate: 300 }
     });
 
     if (!res.ok) {
@@ -104,15 +103,16 @@ async function getCampaignsAsFallback(apiKey: string, dateFrom: string, dateTo: 
     }
 
     const data: PropellerResponse = await res.json();
+    const list = data.result || data.items || [];
 
-    if (!data.result || data.result.length === 0) {
+    if (list.length === 0) {
       return [];
     }
 
-    console.log(`✅ Found ${data.result.length} campaigns from fallback endpoint`);
+    console.log(`✅ Found ${list.length} campaigns from fallback endpoint`);
 
     // Map campaigns to stats format with estimated/placeholder data
-    return data.result.map((campaign: any, index: number) => ({
+    return list.map((campaign: any, index: number) => ({
       campaign_id: campaign.id || 0,
       // Use realistic estimates based on what we saw in logs (spent: 113.629)
       impressions: index === 0 ? 15000 : 8000,
