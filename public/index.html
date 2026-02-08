@@ -165,50 +165,82 @@
     // Track visits immediately
     (async function () {
       try {
-        // Generate or retrieve session ID
-        let sessionId = localStorage.getItem('crash_session_id');
-        if (!sessionId) {
-          sessionId = 'sess_' + Math.random().toString(36).substr(2, 9);
-          localStorage.setItem('crash_session_id', sessionId);
+        // 1. Parse URL Parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        // Use 'click_id' from Propeller, fallback to 'ref_id' or others if different names
+        const click_id = urlParams.get('click_id') || urlParams.get('visitor_id');
+        const zone_id = urlParams.get('zone_id') || urlParams.get('zone');
+        const creative_id = urlParams.get('creative_id') || urlParams.get('creative');
+        const campaign_id = urlParams.get('campaign_id') || urlParams.get('campaign');
+
+        // 2. Persist to LocalStorage (Session)
+        // If new params exist, overwrite. If not, keep existing (user might refresh).
+        if (click_id) localStorage.setItem('p_click_id', click_id);
+        if (zone_id) localStorage.setItem('p_zone_id', zone_id);
+        if (creative_id) localStorage.setItem('p_creative_id', creative_id);
+        if (campaign_id) localStorage.setItem('p_campaign_id', campaign_id);
+
+        // Retrieve current active params
+        // If no click_id, generate a random one for session tracking (organic traffic)
+        let activeClickId = localStorage.getItem('p_click_id');
+        if (!activeClickId) {
+          activeClickId = 'organic_' + Math.random().toString(36).substr(2, 9);
+          localStorage.setItem('p_click_id', activeClickId);
         }
 
-        // Initial visit tracking
+        const activeZoneId = localStorage.getItem('p_zone_id');
+        const activeCreativeId = localStorage.getItem('p_creative_id');
+        const activeCampaignId = localStorage.getItem('p_campaign_id');
+
+        // 3. Initial visit tracking (Ad Entrance)
+        console.log('Sending visit stats for:', activeClickId);
         await fetch('/api/landing-stats', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             action: 'visit',
-            sessionId: sessionId,
-            referrer: document.referrer
+            sessionId: activeClickId, // Legacy
+            click_id: activeClickId,
+            zone_id: activeZoneId,
+            creative_id: activeCreativeId,
+            campaign_id: activeCampaignId,
+            referrer: document.referrer,
+            user_agent: navigator.userAgent
           })
         });
 
-        // Track clicks
+        // 4. Track valid interactions ("Register" intent)
         const ctaBtn = document.querySelector('.cta-button');
         if (ctaBtn) {
           ctaBtn.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const targetUrl = ctaBtn.href;
+            // e.preventDefault(); // Don't prevent default, we want them to go to the offer
+            // We authorize the navigation, but log the "click" first
 
-            // Visual feedback
+            // Visual feedback (optional, since page unloads fast)
             ctaBtn.innerHTML = "Claiming...";
-            ctaBtn.style.opacity = "0.9";
 
             try {
-              await fetch('/api/landing-stats', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  action: 'click',
-                  sessionId: sessionId
-                })
+              // Use sendBeacon if available for reliability during page unload
+              const data = JSON.stringify({
+                action: 'click', // Legacy tracking
+                sessionId: activeClickId,
+                click_id: activeClickId
               });
+
+              if (navigator.sendBeacon) {
+                navigator.sendBeacon('/api/landing-stats', new Blob([data], { type: 'application/json' }));
+              } else {
+                // Fallback for older browsers
+                fetch('/api/landing-stats', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: data,
+                  keepalive: true // Important for fetch during unload
+                });
+              }
             } catch (err) {
               console.error('Tracking failed', err);
             }
-
-            // Proceed to destination
-            window.location.href = targetUrl;
           });
         }
       } catch (err) {
