@@ -37,7 +37,7 @@ export async function getCampaignStats(dateFrom: string, dateTo: string): Promis
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
-      next: { revalidate: 300 } // Cache for 5 mins
+      cache: 'no-store'
     });
 
     if (res.status === 429) {
@@ -89,7 +89,7 @@ async function getCampaignsAsFallback(apiKey: string, dateFrom: string, dateTo: 
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json'
       },
-      next: { revalidate: 300 }
+      cache: 'no-store'
     });
 
     if (!res.ok) {
