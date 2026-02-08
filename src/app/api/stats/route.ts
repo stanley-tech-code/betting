@@ -12,14 +12,25 @@ export async function GET(request: Request) {
 
   try {
     if (debug) {
+      let debugStats: any[] = [];
+      let debugError: any = null;
+      try {
+        debugStats = await getCampaignStats('2024-01-01', new Date().toISOString().split('T')[0]);
+      } catch (e: any) {
+        debugError = e.message;
+      }
+
       return NextResponse.json({
         status: 'debug',
         apiKeyPresent: !!process.env.PROPELLER_API_KEY,
-        apiKeyPrefix: process.env.PROPELLER_API_KEY?.substring(0, 4),
-        apiKeyLength: process.env.PROPELLER_API_KEY?.length,
-        nodeEnv: process.env.NODE_ENV,
-        dateFrom,
-        dateTo
+        apiKeyPrefix: process.env.PROPELLER_API_KEY ? process.env.PROPELLER_API_KEY.substring(0, 5) : 'NONE',
+        apiKeyLength: process.env.PROPELLER_API_KEY ? process.env.PROPELLER_API_KEY.length : 0,
+        appUrl: process.env.NEXT_PUBLIC_APP_URL || 'NOT_SET',
+        fetchedStats: debugStats,
+        fetchError: debugError,
+        dataLength: debugStats.length,
+        dateFrom: '2024-01-01',
+        dateTo: new Date().toISOString().split('T')[0]
       });
     }
 
