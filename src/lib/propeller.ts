@@ -30,7 +30,7 @@ export interface StatsResult {
 }
 
 export async function getCampaignStats(dateFrom: string, dateTo: string): Promise<StatsResult> {
-  const apiKey = process.env.PROPELLER_API_KEY;
+  const apiKey = process.env.PROPELLER_API_KEY?.trim();
 
   if (!apiKey) {
     throw new Error('PROPELLER_API_KEY is not defined');
