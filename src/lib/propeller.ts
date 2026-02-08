@@ -17,14 +17,25 @@ export interface PropellerResponse {
   errors?: any[];
 }
 
-export async function getCampaignStats(dateFrom: string, dateTo: string): Promise<CampaignStats[]> {
+export interface StatsResult {
+  stats: CampaignStats[];
+  debug?: {
+    url: string;
+    status: number;
+    statusText: string;
+    headers: Record<string, string>;
+    rawResponseSnippet: string;
+    error?: string;
+  };
+}
+
+export async function getCampaignStats(dateFrom: string, dateTo: string): Promise<StatsResult> {
   const apiKey = process.env.PROPELLER_API_KEY;
 
   if (!apiKey) {
     throw new Error('PROPELLER_API_KEY is not defined');
   }
 
-  // Try statistics endpoint first
   // Try statistics endpoint first
   const params = new URLSearchParams();
   params.append('day_from', '2024-01-01'); // Hardcoded start
@@ -33,6 +44,14 @@ export async function getCampaignStats(dateFrom: string, dateTo: string): Promis
 
   // Do NOT replace brackets manually. Let fetch handle it.
   const statsUrl = `${API_BASE_URL}/statistics?${params.toString()}`;
+
+  const debugInfo: any = {
+    url: statsUrl,
+    status: 0,
+    statusText: '',
+    headers: {},
+    rawResponseSnippet: ''
+  };
 
   console.log(`📡 Fetching PropellerAds Stats: ${statsUrl}`);
 
@@ -46,30 +65,44 @@ export async function getCampaignStats(dateFrom: string, dateTo: string): Promis
       cache: 'no-store'
     });
 
+    debugInfo.status = res.status;
+    debugInfo.statusText = res.statusText;
+    res.headers.forEach((v, k) => { debugInfo.headers[k] = v; });
+
     if (res.status === 429) {
       console.warn('⏳ Statistics endpoint rate-limited. Falling back to campaigns endpoint...');
-      return await getCampaignsAsFallback(apiKey, dateFrom, dateTo);
+      debugInfo.error = 'Rate Limited 429';
+      const fallback = await getCampaignsAsFallback(apiKey, dateFrom, dateTo);
+      return { stats: fallback, debug: debugInfo };
     }
 
     if (!res.ok) {
       const errorText = await res.text();
+      debugInfo.rawResponseSnippet = errorText.substring(0, 500);
+      debugInfo.error = `HTTP ${res.status}`;
       console.error(`PropellerAds API Error (${res.status}):`, errorText);
-      return await getCampaignsAsFallback(apiKey, dateFrom, dateTo);
+      const fallback = await getCampaignsAsFallback(apiKey, dateFrom, dateTo);
+      return { stats: fallback, debug: debugInfo };
     }
 
     const data: PropellerResponse = await res.json();
+    debugInfo.rawResponseSnippet = JSON.stringify(data).substring(0, 500);
+
     console.log('🔍 PropellerAds API Raw Response:', JSON.stringify(data, null, 2));
 
     const list = data.result || data.items || [];
 
     if (list.length === 0) {
       console.warn('⚠️ No statistics data. Falling back to campaigns endpoint...');
-      return await getCampaignsAsFallback(apiKey, dateFrom, dateTo);
+      debugInfo.error = 'Empty List';
+      const fallback = await getCampaignsAsFallback(apiKey, dateFrom, dateTo);
+      return { stats: fallback, debug: debugInfo };
     }
 
     console.log(`📊 Result array length: ${list.length}`);
 
-    return list.map((item: any) => ({
+    // Convert to CampaignStats
+    const stats = list.map((item: any) => ({
       campaign_id: item.campaign_id || 0,
       impressions: Number(item.impressions) || 0,
       clicks: Number(item.clicks) || 0,
@@ -79,9 +112,13 @@ export async function getCampaignStats(dateFrom: string, dateTo: string): Promis
       date: dateTo
     }));
 
-  } catch (error) {
+    return { stats, debug: debugInfo };
+
+  } catch (error: any) {
     console.error('PropellerService Error:', error);
-    return await getCampaignsAsFallback(apiKey, dateFrom, dateTo);
+    debugInfo.error = error.message;
+    const fallback = await getCampaignsAsFallback(apiKey, dateFrom, dateTo);
+    return { stats: fallback, debug: debugInfo };
   }
 }
 
@@ -123,7 +160,6 @@ async function getCampaignsAsFallback(apiKey: string, dateFrom: string, dateTo: 
       profit: index === 0 ? 15.40 : 8.30,
       date: dateTo
     }));
-
   } catch (error) {
     console.error('Fallback campaigns fetch error:', error);
     return [];
