@@ -30,10 +30,9 @@ export interface StatsResult {
 }
 
 // export async function getCampaignStats(dateFrom: string, dateTo: string): Promise<StatsResult> {
+// export async function getCampaignStats(dateFrom: string, dateTo: string): Promise<StatsResult> {
 export async function getCampaignStats(dateFrom: string, dateTo: string): Promise<StatsResult> {
-  // HARDCODE KEY FOR DIAGNOSIS
-  // const apiKey = process.env.PROPELLER_API_KEY?.trim();
-  const apiKey = '681766321ea5b02f6c1b5be1c6088089241ca81b202b29a1';
+  const apiKey = process.env.PROPELLER_API_KEY?.trim();
 
   if (!apiKey) {
     throw new Error('PROPELLER_API_KEY is not defined');
