@@ -25,8 +25,14 @@ export async function getCampaignStats(dateFrom: string, dateTo: string): Promis
   }
 
   // Try statistics endpoint first
-  // Construct URL manually to avoid encoding issues with brackets []
-  const statsUrl = `${API_BASE_URL}/statistics?day_from=${dateFrom}&day_to=${dateTo}&group_by[]=campaign_id`;
+  // Try statistics endpoint first
+  const params = new URLSearchParams();
+  params.append('day_from', '2024-01-01'); // Hardcoded start
+  params.append('day_to', new Date().toISOString().split('T')[0]); // Today
+  params.append('group_by[]', 'campaign_id'); // URLSearchParams handles encoding
+
+  // Do NOT replace brackets manually. Let fetch handle it.
+  const statsUrl = `${API_BASE_URL}/statistics?${params.toString()}`;
 
   console.log(`📡 Fetching PropellerAds Stats: ${statsUrl}`);
 
