@@ -12,83 +12,23 @@ function getStartOfDay(date = new Date()) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const {
-      action,
-      sessionId,
-      click_id,
-      zone_id,
-      creative_id,
-      campaign_id,
-      visitor_ip,
-      user_agent,
-      amount,
-      currency
-    } = body;
+    const { action, sessionId, referrer } = body;
 
-    // Legacy support: map sessionId to click_id if not present
-    const finalClickId = click_id || sessionId;
-
-    if (!action) {
-      return NextResponse.json({ error: 'Missing action' }, { status: 400 });
+    if (!action || !sessionId) {
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    let error = null;
-
-    if (action === 'visit') {
-      // Log entrance to landing page -> ad_clicks table
-      const { error: insertError } = await supabase
-        .from('ad_clicks')
-        .insert({
-          click_id: finalClickId,
-          zone_id: zone_id || null,
-          creative_id: creative_id || null,
-          campaign_id: campaign_id || null,
-          visitor_ip: visitor_ip || 'unknown',
-          user_agent: user_agent || 'unknown',
-          created_at: new Date().toISOString()
-        });
-
-      // Also log to legacy landing_stats for backward compatibility
-      await supabase.from('landing_stats').insert({
-        session_id: finalClickId,
-        action: 'visit',
-        referrer: body.referrer || null
+    const { error } = await supabase
+      .from('landing_stats')
+      .insert({
+        session_id: sessionId,
+        action: action, // 'visit' or 'click'
+        referrer: referrer || null
       });
-
-      error = insertError;
-    }
-    else if (['registration', 'deposit', 'login'].includes(action)) {
-      // Log conversion event -> conversions table
-      const { error: insertError } = await supabase
-        .from('conversions')
-        .insert({
-          click_id: finalClickId,
-          event_type: action,
-          amount: amount ? parseFloat(amount) : null,
-          currency: currency || 'KES',
-          created_at: new Date().toISOString()
-        });
-      error = insertError;
-    }
-    else if (action === 'click') {
-      // Outbound click to betting site
-      // Log to legacy landing_stats
-      const { error: legacyError } = await supabase
-        .from('landing_stats')
-        .insert({
-          session_id: finalClickId,
-          action: 'click',
-          referrer: body.referrer || null
-        });
-
-      // Also enter as a 'registration_attempt' or similar if we wanted, but for now just legacy is fine.
-      error = legacyError;
-    }
 
     if (error) {
       console.error('Supabase error:', error);
-      // We don't return 500 here to avoid client errors if tables are missing, just log
-      return NextResponse.json({ error: error.message, warning: "Ensure DB migration is run" }, { status: 200 });
+      return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
@@ -111,14 +51,14 @@ export async function GET(request: Request) {
       // Fetch stats for today and yesterday
 
       // Today's stats
-      const { count: visitsToday } = await supabase
+      const { count: visitsToday, error: err1 } = await supabase
         .from('landing_stats')
         .select('*', { count: 'exact', head: true })
         .eq('action', 'visit')
         .gte('created_at', todayStart)
         .lt('created_at', tomorrowStart);
 
-      const { count: clicksToday } = await supabase
+      const { count: clicksToday, error: err2 } = await supabase
         .from('landing_stats')
         .select('*', { count: 'exact', head: true })
         .eq('action', 'click')
@@ -126,19 +66,23 @@ export async function GET(request: Request) {
         .lt('created_at', tomorrowStart);
 
       // Yesterday's stats (for growth)
-      const { count: visitsYesterday } = await supabase
+      const { count: visitsYesterday, error: err3 } = await supabase
         .from('landing_stats')
         .select('*', { count: 'exact', head: true })
         .eq('action', 'visit')
         .gte('created_at', yesterdayStart)
         .lt('created_at', todayStart);
 
-      const { count: clicksYesterday } = await supabase
+      const { count: clicksYesterday, error: err4 } = await supabase
         .from('landing_stats')
         .select('*', { count: 'exact', head: true })
         .eq('action', 'click')
         .gte('created_at', yesterdayStart)
         .lt('created_at', todayStart);
+
+      if (err1 || err2 || err3 || err4) {
+        throw new Error('Database query failed');
+      }
 
       const vToday = visitsToday || 0;
       const cToday = clicksToday || 0;
@@ -173,7 +117,10 @@ export async function GET(request: Request) {
         const d = new Date();
         d.setDate(d.getDate() - i);
         const dayStr = d.toLocaleDateString('en-US', { weekday: 'short' });
+        const dateKey = d.toISOString().split('T')[0];
 
+        // Count visits for this day
+        // Ideally this should be a single query with group by, but for simplicity/reliability with unknown schema constraints loop is fine for small scale
         const dayStart = getStartOfDay(d);
         const nextDayStart = getStartOfDay(new Date(d.getTime() + 86400000));
 
@@ -198,6 +145,7 @@ export async function GET(request: Request) {
 
   } catch (error: any) {
     console.error('API Error:', error);
+    // Return empty data on failure to prevent dashboard crash
     if (action === 'dashboard-summary') {
       return NextResponse.json({
         today: { visits: 0, clicks: 0, ctr: '0%' },

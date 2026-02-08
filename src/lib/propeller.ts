@@ -103,6 +103,7 @@ export async function getCampaignStats(dateFrom: string, dateTo: string): Promis
 
     console.log(`📊 Result array length: ${list.length}`);
 
+    // Convert to CampaignStats
     const stats = list.map((item: any) => ({
       campaign_id: item.campaign_id || 0,
       impressions: Number(item.impressions) || 0,
@@ -120,55 +121,6 @@ export async function getCampaignStats(dateFrom: string, dateTo: string): Promis
     debugInfo.error = error.message;
     const fallback = await getCampaignsAsFallback(apiKey, dateFrom, dateTo);
     return { stats: fallback, debug: debugInfo };
-  }
-}
-
-export async function getZoneStats(dateFrom: string, dateTo: string) {
-  const apiKey = process.env.PROPELLER_API_KEY?.trim();
-  if (!apiKey) throw new Error('PROPELLER_API_KEY is not defined');
-
-  const params = new URLSearchParams();
-  params.append('day_from', dateFrom);
-  params.append('day_to', dateTo);
-  params.append('group_by[]', 'zone_id');
-  params.append('group_by[]', 'campaign_id'); // useful to keep track
-
-  const statsUrl = `${API_BASE_URL}/statistics?${params.toString()}`;
-  console.log(`📡 Fetching Propeller Zone Stats: ${statsUrl}`);
-
-  try {
-    const res = await fetch(statsUrl, {
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      cache: 'no-store'
-    });
-
-    if (!res.ok) {
-      console.error(`Zone Stats Fetch Error: ${res.status}`);
-      return { stats: [], debug: { status: res.status } };
-    }
-
-    const data = await res.json();
-    const list = data.result || data.items || [];
-
-    // Map to simple structure
-    const stats = list.map((item: any) => ({
-      zone_id: String(item.zone_id),
-      campaign_id: item.campaign_id,
-      impressions: Number(item.impressions) || 0,
-      clicks: Number(item.clicks) || 0,
-      conversions: Number(item.conversions) || 0,
-      money_spent: Number(item.spent) || Number(item.money_spent) || 0
-    }));
-
-    return { stats, debug: { matchCount: stats.length } };
-
-  } catch (error: any) {
-    console.error('getZoneStats Error:', error);
-    return { stats: [], debug: { error: error.message } };
   }
 }
 
@@ -214,65 +166,4 @@ async function getCampaignsAsFallback(apiKey: string, dateFrom: string, dateTo: 
     console.error('Fallback campaigns fetch error:', error);
     return [];
   }
-}
-
-// Write API Methods (The "Hands")
-
-export async function startCampaign(campaignId: number | string) {
-  return _callPropellerApi(`/campaigns/${campaignId}/start`, 'PUT');
-}
-
-export async function stopCampaign(campaignId: number | string) {
-  return _callPropellerApi(`/campaigns/${campaignId}/stop`, 'PUT');
-}
-
-export async function setCampaignBid(campaignId: number | string, bid: number) {
-  // Note: Propeller API structure for bidding might vary. 
-  // Usually it's a PATCH to /campaigns/{id} with { money_max_bid: x } or similar.
-  // Assuming simplified 'target_url' update structure for now or generic update.
-  // For Safety, we will log this as a "Dry Run" until we confirm exact shape.
-  console.log(`[DRY RUN] Setting bid for ${campaignId} to ${bid}`);
-  // return _callPropellerApi(`/campaigns/${campaignId}`, 'PUT', { money_max_bid: bid });
-  return { success: true, dry_run: true };
-}
-
-export async function banZone(campaignId: number | string, zoneId: string) {
-  // Blocking a zone typically involves updating the campaign's 'exclude_zones' list.
-  // This is a dangerous operation if we overwrite existing exclusions.
-  // We need to fetch current, append, and update.
-
-  // 1. Fetch current details
-  // const current = await _callPropellerApi(`/campaigns/${campaignId}`, 'GET');
-  // const oldExcludes = current.exclude_zones || [];
-  // const newExcludes = [...oldExcludes, zoneId];
-
-  console.log(`[DRY RUN] Banning zone ${zoneId} for campaign ${campaignId}`);
-  // return _callPropellerApi(`/campaigns/${campaignId}`, 'PUT', { exclude_zones: newExcludes });
-  return { success: true, dry_run: true };
-}
-
-// Helper for API calls
-async function _callPropellerApi(endpoint: string, method: string, body?: any) {
-  const apiKey = process.env.PROPELLER_API_KEY?.trim();
-  if (!apiKey) throw new Error('PROPELLER_API_KEY is not defined');
-
-  const url = `${API_BASE_URL}${endpoint}`;
-  console.log(`📡 Propeller Write API: ${method} ${url}`);
-
-  const res = await fetch(url, {
-    method,
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    },
-    body: body ? JSON.stringify(body) : undefined
-  });
-
-  if (!res.ok) {
-    const txt = await res.text();
-    throw new Error(`Propeller Write Error: ${res.status} ${txt}`);
-  }
-
-  return res.json();
 }
