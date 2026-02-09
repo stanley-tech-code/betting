@@ -9,7 +9,39 @@ export default function LandingPage() {
 
   useEffect(() => {
     setMounted(true);
+    // Track Visit
+    const trackVisit = async () => {
+      const sessionId = localStorage.getItem('session_id') || Math.random().toString(36).substring(7);
+      localStorage.setItem('session_id', sessionId);
+
+      try {
+        await fetch('/api/landing/track', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            session_id: sessionId,
+            action: 'visit',
+            referrer: document.referrer
+          })
+        });
+      } catch (e) { console.error('Tracking error:', e); }
+    };
+    trackVisit();
   }, []);
+
+  const handleClick = async () => {
+    const sessionId = localStorage.getItem('session_id');
+    try {
+      await fetch('/api/landing/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          session_id: sessionId,
+          action: 'click'
+        })
+      });
+    } catch (e) { console.error('Tracking error:', e); }
+  };
 
   if (!mounted) return null;
 
@@ -82,7 +114,7 @@ export default function LandingPage() {
             Tap to get free <span className="font-bold text-lg">50 KSH</span>
           </motion.p>
 
-          <Link href="https://boompesa.com/" className="block w-full">
+          <Link href="https://boompesa.com/" onClick={handleClick} className="block w-full">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}

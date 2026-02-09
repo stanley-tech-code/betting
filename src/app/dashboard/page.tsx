@@ -2,13 +2,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { BrainCircuit, LayoutDashboard, Wallet, Palette, Map, Clock } from 'lucide-react';
+import { BrainCircuit, LayoutDashboard, Wallet, Palette, Map, Clock, MousePointer2 } from 'lucide-react';
 import TopStatsBar from '@/components/dashboard/TopStatsBar';
 import CommandCenter from '@/components/dashboard/CommandCenter';
 import BudgetCenter from '@/components/dashboard/BudgetCenter';
 import CreativeCenter from '@/components/dashboard/CreativeCenter';
 import ZoneCenter from '@/components/dashboard/ZoneCenter';
 import TimeCenter from '@/components/dashboard/TimeCenter';
+import LandingStats from '@/components/dashboard/LandingStats';
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState('command');
@@ -40,6 +41,7 @@ export default function DashboardPage() {
     { id: 'creative', label: 'Creative Intellectual', icon: Palette },
     { id: 'zone', label: 'Zone Intellectual', icon: Map },
     { id: 'time', label: 'Time Intellectual', icon: Clock },
+    { id: 'landing', label: 'Landing Stats', icon: MousePointer2 },
   ];
 
   return (
@@ -80,6 +82,7 @@ export default function DashboardPage() {
           {activeTab === 'creative' && <CreativeCenter />}
           {activeTab === 'zone' && <ZoneCenter />}
           {activeTab === 'time' && <TimeCenter />}
+          {activeTab === 'landing' && <LandingStats />}
         </div>
       </main>
 
