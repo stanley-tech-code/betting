@@ -82,7 +82,7 @@ export default function LandingPage() {
             Tap to get free <span className="font-bold text-lg">50 KSH</span>
           </motion.p>
 
-          <Link href="/dashboard" className="block w-full">
+          <Link href="https://boompesa.com/" className="block w-full">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
