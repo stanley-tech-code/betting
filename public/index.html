@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CRASH - Up to 5 million to be won! Play now.">
+  <title>CRASH - Play Now</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(135deg, #0f0c29 0%, #302b63 100%);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-image: url('/crash_game_bg.png'), linear-gradient(135deg, #0f0c29 0%, #302b63 100%);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      overflow: hidden;
+    }
+
+    .container {
+      text-align: center;
+      padding: 2.5rem;
+      max-width: 90%;
+      width: 500px;
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1.5rem;
+      backdrop-filter: blur(15px);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      animation: fadeIn 0.8s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h1 {
+      font-size: 4rem;
+      margin: 0;
+      padding: 0;
+      font-weight: 900;
+      letter-spacing: -2px;
+      background: linear-gradient(to bottom, #ff4d4d, #ff0000);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
+      line-height: 1;
+    }
+
+    .subtitle {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #ffcc00;
+      /* Gold color */
+      margin-top: 0.5rem;
+      margin-bottom: 2rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .offer-box {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .offer-text {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+      color: #e0e0e0;
+    }
+
+    .amount {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #4ade80;
+      /* Green */
+      display: block;
+      margin-top: 0.25rem;
+    }
+
+    .cta-button {
+      display: block;
+      width: 100%;
+      padding: 1.25rem;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: white;
+      background: linear-gradient(to bottom, #e31e24, #b91c1c);
+      border: none;
+      border-radius: 50px;
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(227, 30, 36, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      position: relative;
+      overflow: hidden;
+      box-sizing: border-box;
+      cursor: pointer;
+    }
+
+    .cta-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(227, 30, 36, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      background: linear-gradient(to bottom, #ff3333, #cc0000);
+    }
+
+    .cta-button:active {
+      transform: translateY(1px);
+    }
+
+    /* Shine effect */
+    .cta-button::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+      0% {
+        left: -100%;
+      }
+
+      20% {
+        left: 100%;
+      }
+
+      100% {
+        left: 100%;
+      }
+    }
+
+    .footer {
+      margin-top: 2rem;
+      font-size: 0.75rem;
+      color: #666;
+    }
+  </style>
+  <script>
+    // Track visits immediately
+    (async function () {
+      try {
+        // Generate or retrieve session ID
+        let sessionId = localStorage.getItem('crash_session_id');
+        if (!sessionId) {
+          sessionId = 'sess_' + Math.random().toString(36).substr(2, 9);
+          localStorage.setItem('crash_session_id', sessionId);
+        }
+
+        // Initial visit tracking
+        await fetch('/api/landing-stats', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'visit',
+            sessionId: sessionId,
+            referrer: document.referrer
+          })
+        });
+
+        // Track clicks
+        const ctaBtn = document.querySelector('.cta-button');
+        if (ctaBtn) {
+          ctaBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const targetUrl = ctaBtn.href;
+
+            // Visual feedback
+            ctaBtn.innerHTML = "Claiming...";
+            ctaBtn.style.opacity = "0.9";
+
+            try {
+              await fetch('/api/landing-stats', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  action: 'click',
+                  sessionId: sessionId
+                })
+              });
+            } catch (err) {
+              console.error('Tracking failed', err);
+            }
+
+            // Proceed to destination
+            window.location.href = targetUrl;
+          });
+        }
+      } catch (err) {
+        console.error('Analytics init failed', err);
+      }
+    })();
+  </script>
+</head>
+
+<body>
+  <div class="container">
+    <h1>CRASH</h1>
+    <div class="subtitle">UP TO 5 MILLION TO BE WON</div>
+
+    <div class="offer-box">
+      <div class="offer-text">Tap to get free</div>
+      <div class="amount">50 KSH</div>
+    </div>
+
+    <a href="https://boompesa.com/" class="cta-button">TAP TO CLAIM</a>
+
+    <div class="footer">
+      18+ | Play Responsibly | Terms & Conditions Apply
+    </div>
+  </div>
+</body>
+
+</html>
