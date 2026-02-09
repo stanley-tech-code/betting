@@ -5,15 +5,26 @@ import { Clock, Sun, Moon, Calendar, BrainCircuit } from 'lucide-react';
 
 export default function TimeCenter() {
 
+  // Mock Heatmap Data (24 hours x 7 days)
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const hours = Array.from({ length: 24 }, (_, i) => i);
 
-  // Heatmap will display real conversion data when available
-  // For now showing empty state
-  const getIntensity = (d: number, h: number) => 0;
+  // Simple function to mock intensity
+  const getIntensity = (d: number, h: number) => {
+    if (h >= 21 || h <= 1) return 3; // Late night peak
+    if (h >= 4 && h <= 8) return 0; // Morning lull
+    if (d === 0 || d === 6) return 2; // Weekends good
+    return 1; // Average
+  };
 
   const getCellColor = (intensity: number) => {
-    return 'bg-zinc-800 text-zinc-600'; // Empty state
+    switch (intensity) {
+      case 3: return 'bg-emerald-500 text-white'; // Hot
+      case 2: return 'bg-emerald-500/60 text-white'; // Warm
+      case 1: return 'bg-emerald-500/30 text-zinc-300'; // OK
+      case 0: return 'bg-zinc-800 text-zinc-600'; // Cold
+      default: return 'bg-zinc-800';
+    }
   };
 
   return (

@@ -8,8 +8,12 @@ export default function BudgetCenter({ data }: any) {
   const [executing, setExecuting] = useState(false);
   const rec = data?.budget_recommendation || { action: 'MAINTAIN', amount: 200, reason: "Analyzing..." };
 
-  // Burn rate data will be displayed when available from API
-  // For now, showing simplified view without historical chart
+  // Mock Burn Rate Data for Visualization
+  const burnRate = [
+    { h: '00', v: 2 }, { h: '02', v: 0 }, { h: '04', v: 0 }, { h: '06', v: 5 },
+    { h: '08', v: 12 }, { h: '10', v: 25 }, { h: '12', v: 35 }, { h: '14', v: 42 },
+    { h: '16', v: 55 }, { h: '18', v: 80 }, { h: '20', v: 120 }, { h: '22', v: 156 }
+  ];
 
   return (
     <div className="space-y-6">

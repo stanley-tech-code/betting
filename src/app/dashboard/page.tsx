@@ -36,10 +36,10 @@ export default function DashboardPage() {
 
   const tabs = [
     { id: 'command', label: 'Command Center', icon: LayoutDashboard },
-    { id: 'budget', label: 'Budget Intelligence', icon: Wallet },
-    // { id: 'creative', label: 'Creative Intelligence', icon: Palette }, // Disabled - not tracking creatives yet
-    { id: 'zone', label: 'Zone Intelligence', icon: Map },
-    { id: 'time', label: 'Time Intelligence', icon: Clock },
+    { id: 'budget', label: 'Budget Intellectual', icon: Wallet },
+    { id: 'creative', label: 'Creative Intellectual', icon: Palette },
+    { id: 'zone', label: 'Zone Intellectual', icon: Map },
+    { id: 'time', label: 'Time Intellectual', icon: Clock },
   ];
 
   return (
