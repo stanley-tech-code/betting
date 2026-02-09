@@ -9,13 +9,13 @@ import {
 export default function CommandCenter({ data }: any) {
   const p = data?.performance || {};
 
-  // Mock trends for demo (since we don't have historical delta in this API response yet)
+  // Calculate trends from data (will show when historical comparison is available)
   const trends = {
-    profit: { val: "+18%", positive: true },
-    roi: { val: "+6%", positive: true },
-    regs: { val: "+12", positive: true },
-    deps: { val: "+3", positive: true },
-    cpa: { val: "-$1.20", positive: true } // Negative cost is good
+    profit: { val: p.profit_trend || "—", positive: (p.profit || 0) >= 0 },
+    roi: { val: p.roi_trend || "—", positive: (p.roi || 0) >= 0 },
+    regs: { val: p.regs_trend || "—", positive: true },
+    deps: { val: p.deps_trend || "—", positive: true },
+    cpa: { val: p.cpa_trend || "—", positive: (p.cpa_change || 0) < 0 } // Lower CPA is better
   };
 
   return (
